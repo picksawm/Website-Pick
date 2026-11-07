@@ -1,4 +1,20 @@
+# Picksaw — https://picksaw.ir
+# Artist: Amirehsan Ashoori (امیراحسان عاشوری)
+
 User-agent: *
+Allow: /
+
+# Never index the studio's admin surface
+Disallow: /journal?
+
+# AI crawlers are welcome: this is a portfolio meant to be found and cited.
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
 Allow: /
 
 Sitemap: https://picksaw.ir/sitemap.xml

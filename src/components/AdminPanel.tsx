@@ -7,6 +7,10 @@ interface AdminPanelProps {
   onClose: () => void;
 }
 
+/**
+ * AdminPanel — create a journal post. Same Worker/D1 contract as before;
+ * only the surface is new: bone paper, ruled fields, no glass.
+ */
 export default function AdminPanel({ onAddPost, onClose }: AdminPanelProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -17,18 +21,17 @@ export default function AdminPanel({ onAddPost, onClose }: AdminPanelProps) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const field =
+    "w-full border-b border-black/20 bg-transparent py-2.5 text-sm outline-none transition-colors placeholder:opacity-30 focus:border-[#121110]";
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!title.trim() || saving) return;
 
     const trimmedUrl = mediaUrl.trim();
-
-    // If a URL was provided, make sure it is a normal web URL.
     if (trimmedUrl) {
       try {
         const url = new URL(trimmedUrl);
-
         if (url.protocol !== "http:" && url.protocol !== "https:") {
           setError("Media URL must start with http:// or https://");
           return;
@@ -39,31 +42,21 @@ export default function AdminPanel({ onAddPost, onClose }: AdminPanelProps) {
       }
     }
 
-    const tags = tagsInput
-      .split(",")
-      .map((t) => t.trim())
-      .filter(Boolean);
-
-    const input: NewPostInput = {
-      type: detectedType,
-      title: title.trim(),
-      description: description.trim() || "No description",
-      tags,
-      mediaUrl: trimmedUrl || undefined,
-    };
+    const tags = tagsInput.split(",").map((t) => t.trim()).filter(Boolean);
 
     setSaving(true);
     setError(null);
-
     try {
-      await onAddPost(input);
+      await onAddPost({
+        type: detectedType,
+        title: title.trim(),
+        description: description.trim() || "No description",
+        tags,
+        mediaUrl: trimmedUrl || undefined,
+      });
       setSubmitted(true);
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Could not save post. Please try again."
-      );
+      setError(err instanceof Error ? err.message : "Could not save post. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -81,124 +74,56 @@ export default function AdminPanel({ onAddPost, onClose }: AdminPanelProps) {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-label="Admin panel"
     >
-      <div className="relative flex max-h-[90vh] max-h-[90dvh] w-full max-w-lg flex-col overflow-hidden rounded-3xl border border-white/10 bg-slate-950/95 shadow-2xl shadow-black/60 backdrop-blur-xl">
-
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-white/8 px-6 py-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-sky-600">
-              <svg
-                className="h-4.5 w-4.5 text-white"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path
-                  d="M12 5v14M5 12h14"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
-
-            <h2 className="text-lg font-bold text-white">
-              New Post
-            </h2>
-          </div>
-
+      <div className="relative flex max-h-[90dvh] w-full max-w-lg flex-col overflow-hidden bg-[#f4f1ea] text-[#121110]">
+        <div className="flex items-center justify-between border-b border-black/12 px-5 py-4">
+          <p className="mono-label opacity-45">Journal — new entry</p>
           <button
             type="button"
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-slate-400 transition hover:text-white"
+            className="text-lg leading-none opacity-40 transition-opacity hover:opacity-90"
             aria-label="Close"
           >
-            <svg
-              className="h-4 w-4"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path
-                d="M18 6L6 18M6 6l12 12"
-                strokeLinecap="round"
-              />
-            </svg>
+            ×
           </button>
         </div>
 
         {submitted ? (
-          /* Success */
-          <div className="flex flex-col items-center gap-4 px-6 py-16 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-400/15 text-emerald-300 ring-1 ring-emerald-400/30">
-              <svg
-                className="h-8 w-8"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path
-                  d="M5 12l5 5L19 7"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-
-            <h3 className="text-xl font-bold text-white">
-              Post created
-            </h3>
-
-            <p className="text-sm text-slate-400">
-              Your post is now live in the feed.
-            </p>
-
+          <div className="flex flex-col items-start gap-4 p-7">
+            <p className="font-display text-2xl">Published.</p>
+            <p className="text-sm opacity-60">Your entry is live in the journal.</p>
             <div className="mt-2 flex gap-3">
               <button
                 type="button"
                 onClick={reset}
-                className="rounded-xl border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-medium text-slate-300 transition hover:bg-white/10"
+                className="border border-black/25 px-4 py-2.5 text-xs font-medium transition-colors hover:border-black/60"
               >
                 Add another
               </button>
-
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
+                className="bg-[#121110] px-4 py-2.5 text-xs font-medium text-[#f4f1ea]"
               >
-                View feed
+                View journal
               </button>
             </div>
           </div>
         ) : (
-          <form
-            onSubmit={handleSubmit}
-            className="flex flex-1 flex-col gap-4 overflow-y-auto p-6"
-          >
-
-            {/* Media Type */}
+          <form onSubmit={handleSubmit} className="flex flex-1 flex-col gap-5 overflow-y-auto p-5">
             <div>
-              <label
-                htmlFor="post-type"
-                className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500"
-              >
+              <label htmlFor="post-type" className="mono-label mb-1.5 block opacity-45">
                 Media type
               </label>
-
               <select
                 id="post-type"
                 value={detectedType}
-                onChange={(e) =>
-                  setDetectedType(e.target.value as Post["type"])
-                }
-                className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition focus:border-cyan-400/40 focus:ring-2 focus:ring-cyan-400/20"
+                onChange={(e) => setDetectedType(e.target.value as Post["type"])}
+                className={field}
               >
                 <option value="image">Image</option>
                 <option value="video">Video</option>
@@ -206,100 +131,74 @@ export default function AdminPanel({ onAddPost, onClose }: AdminPanelProps) {
               </select>
             </div>
 
-            {/* Media URL */}
             <div>
-              <label
-                htmlFor="post-media-url"
-                className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500"
-              >
-                Media URL
-              </label>
-
-              <input
-                id="post-media-url"
-                type="url"
-                value={mediaUrl}
-                onChange={(e) => setMediaUrl(e.target.value)}
-                placeholder="https://example.com/your-file.jpg"
-                className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-400/40 focus:ring-2 focus:ring-cyan-400/20"
-              />
-
-              <p className="mt-1.5 text-xs text-slate-500">
-                Upload your media to your file host first, then paste the
-                direct URL here.
-              </p>
-            </div>
-
-            {/* Title */}
-            <div>
-              <label
-                htmlFor="post-title"
-                className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500"
-              >
+              <label htmlFor="post-title" className="mono-label mb-1.5 block opacity-45">
                 Title
               </label>
-
               <input
                 id="post-title"
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="Give it a name..."
-                className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-400/40 focus:ring-2 focus:ring-cyan-400/20"
+                placeholder="Give it a name…"
+                className={field}
               />
             </div>
 
-            {/* Description */}
             <div>
-              <label
-                htmlFor="post-desc"
-                className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500"
-              >
+              <label htmlFor="post-media-url" className="mono-label mb-1.5 block opacity-45">
+                Media URL
+              </label>
+              <input
+                id="post-media-url"
+                type="url"
+                value={mediaUrl}
+                onChange={(e) => setMediaUrl(e.target.value)}
+                placeholder="https://example.com/file.jpg"
+                className={field}
+              />
+              <p className="mt-1.5 text-[11px] opacity-45">
+                Host the file first, then paste the direct URL.
+              </p>
+            </div>
+
+            <div>
+              <label htmlFor="post-desc" className="mono-label mb-1.5 block opacity-45">
                 Caption
               </label>
-
               <textarea
                 id="post-desc"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
-                placeholder="What's this about..."
-                className="w-full resize-none rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-400/40 focus:ring-2 focus:ring-cyan-400/20"
+                placeholder="What's this about…"
+                className={`${field} resize-none`}
               />
             </div>
 
-            {/* Tags */}
             <div>
-              <label
-                htmlFor="post-tags"
-                className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500"
-              >
-                Tags (comma-separated)
+              <label htmlFor="post-tags" className="mono-label mb-1.5 block opacity-45">
+                Tags — comma separated
               </label>
-
               <input
                 id="post-tags"
                 value={tagsInput}
                 onChange={(e) => setTagsInput(e.target.value)}
-                placeholder="music, ambient, storm"
-                className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-400/40 focus:ring-2 focus:ring-cyan-400/20"
+                placeholder="music, ambient, night"
+                className={field}
               />
             </div>
 
-            {/* Error */}
             {error && (
-              <p className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-2.5 text-center text-xs text-rose-300">
-                {error}
-              </p>
+              <p className="border border-red-700/40 bg-red-700/5 px-3 py-2 text-xs text-red-800">{error}</p>
             )}
 
-            {/* Submit */}
             <button
               type="submit"
               disabled={!title.trim() || saving}
-              className="mt-2 w-full rounded-xl bg-white py-3.5 text-sm font-bold text-slate-900 shadow-lg shadow-white/10 transition-all hover:bg-slate-100 hover:shadow-white/20 disabled:cursor-not-allowed disabled:opacity-40"
+              className="mt-1 w-full bg-[#121110] py-3 text-sm font-medium text-[#f4f1ea] transition-opacity hover:opacity-90 disabled:opacity-40"
             >
-              {saving ? "Publishing…" : "Publish post"}
+              {saving ? "Publishing…" : "Publish entry"}
             </button>
           </form>
         )}
