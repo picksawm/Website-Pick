@@ -5,6 +5,7 @@ import Room from "../components/shell/Room";
 import { PROJECTS, WORK_KINDS, t as tx, type WorkKind } from "../config/portfolio";
 import { SITE_TEXTS, type Lang } from "../config/siteTexts";
 import Art from "../components/ui/Art";
+import Unfold from "../components/scroll/Unfold";
 import { cn } from "../utils/cn";
 
 /**
@@ -21,7 +22,6 @@ export default function WorkRoom({ lang }: { lang: Lang }) {
 
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const plateY = useTransform(scrollYProgress, [0, 1], ["0%", "14%"]);
-  const plateScale = useTransform(scrollYProgress, [0, 1], [1, 1.08]);
 
   const projects = filter === "all" ? PROJECTS : PROJECTS.filter((p) => p.kind === filter);
 
@@ -69,15 +69,20 @@ export default function WorkRoom({ lang }: { lang: Lang }) {
       <section className="px-5 sm:px-8">
         <div className="mx-auto max-w-[1680px]">
           <motion.figure className="group relative overflow-hidden" style={{ y: plateY }}>
-            <div className="aspect-[16/10] w-full overflow-hidden sm:aspect-[21/9]">
-              <motion.img
-                src="/art/hero.jpg"
-                alt={tx(PROJECTS[0].title, lang)}
-                className="ken-burns h-full w-full object-cover"
-                style={{ scale: plateScale }}
-                loading="eager"
+            {/* the monograph opens like a spread — blinds part from the spine */}
+            <Unfold
+              variant="pages"
+              src="/art/hero.jpg"
+              alt={tx(PROJECTS[0].title, lang)}
+              priority
+              className="aspect-[16/10] w-full sm:aspect-[21/9]"
+            >
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0"
+                style={{ background: "linear-gradient(180deg, transparent 60%, rgba(20,19,15,0.35) 100%)" }}
               />
-            </div>
+            </Unfold>
             <figcaption
               className="flex flex-wrap items-baseline justify-between gap-3 border-b py-3 text-[11px]"
               style={{ borderColor: "var(--room-line)", color: "var(--room-dim)" }}

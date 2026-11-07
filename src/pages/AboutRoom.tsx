@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
-import { motion, useScroll, useTransform } from "motion/react";
 import Room from "../components/shell/Room";
+import Unfold from "../components/scroll/Unfold";
 import { ABOUT, CONTACT, t as tx } from "../config/portfolio";
 import { SITE_TEXTS, type Lang } from "../config/siteTexts";
 import { cn } from "../utils/cn";
@@ -15,9 +15,7 @@ import { cn } from "../utils/cn";
 export default function AboutRoom({ lang }: { lang: Lang }) {
   const t = SITE_TEXTS[lang];
   const portraitRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: portraitRef, offset: ["start end", "end start"] });
-  const portraitY = useTransform(scrollYProgress, [0, 1], ["-6%", "6%"]);
-  const [imgFailed, setImgFailed] = useState(false);
+  const [imgFailed] = useState(false);
 
   return (
     <Room tone="room-about" lang={lang} current="about">
@@ -52,13 +50,13 @@ export default function AboutRoom({ lang }: { lang: Lang }) {
           <div ref={portraitRef} className="lg:col-span-7">
             <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#181a1d] sm:aspect-[4/3] lg:aspect-[4/5]">
               {!imgFailed ? (
-                <motion.img
+                /* the portrait opens like a hand: four quadrants splay out */
+                <Unfold
+                  variant="palms"
                   src={ABOUT.portrait}
                   alt={t.ownerName}
-                  style={{ y: portraitY }}
-                  className="h-[112%] w-full object-cover"
-                  onError={() => setImgFailed(true)}
-                  loading="eager"
+                  priority
+                  className="h-full w-full"
                 />
               ) : (
                 <PortraitPlaceholder lang={lang} />

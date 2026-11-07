@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { Link } from "react-router-dom";
 import Room from "../components/shell/Room";
+import Unfold from "../components/scroll/Unfold";
 import { CONTACT, ROOMS, roomLabel } from "../config/portfolio";
 import { SITE_TEXTS, type Lang } from "../config/siteTexts";
 import { cn } from "../utils/cn";
@@ -58,6 +59,25 @@ export default function ContactRoom({ lang }: { lang: Lang }) {
           <p className="mt-6 max-w-xl text-pretty text-sm leading-relaxed opacity-65 sm:text-base">
             {t.contactLead}
           </p>
+        </div>
+      </section>
+
+      {/* ── the letter folds open ─────────────────────────────── */}
+      <section className="px-5 pb-12 sm:px-8">
+        <div className="mx-auto max-w-[1680px]">
+          <Unfold
+            variant="folds"
+            src="/art/hero.jpg"
+            alt={t.contactTitle}
+            className="aspect-[16/9] w-full sm:aspect-[21/9]"
+          >
+            <div className="absolute inset-0 z-[3] flex items-end">
+              <div className="w-full bg-gradient-to-t from-black/60 to-transparent p-4 sm:p-6">
+                <p className="mono-label text-white/55">{t.contactAvailable}</p>
+                <p className="font-display text-xl text-white sm:text-2xl">{t.contactLead}</p>
+              </div>
+            </div>
+          </Unfold>
         </div>
       </section>
 

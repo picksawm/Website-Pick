@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 import Room from "../components/shell/Room";
 import { ALBUMS, t as tx, type Album, type Track } from "../config/portfolio";
 import { SITE_TEXTS, type Lang } from "../config/siteTexts";
-import Art from "../components/ui/Art";
+import Unfold from "../components/scroll/Unfold";
 import { cn } from "../utils/cn";
 
 /**
@@ -137,11 +137,12 @@ export default function SoundRoom({ lang }: { lang: Lang }) {
 function Sleeve({ album, lang }: { album: Album; lang: Lang }) {
   return (
     <div className="relative aspect-square w-full overflow-hidden">
-      <Art
+      <Unfold
+        variant="curtain"
         src={album.image}
         alt={tx(album.title, lang)}
         priority
-        fallback={<DesignedSleeve album={album} lang={lang} />}
+        className="h-full w-full"
       />
       <div aria-hidden className="pointer-events-none absolute inset-0 shadow-[inset_0_0_100px_rgba(0,0,0,0.6)]" />
       {/* vinyl peeking out */}
@@ -154,44 +155,6 @@ function Sleeve({ album, lang }: { album: Album; lang: Lang }) {
           zIndex: -1,
         }}
       />
-    </div>
-  );
-}
-
-/** CSS-only artwork for albums whose photo hasn't been dropped in yet. */
-function DesignedSleeve({ album, lang }: { album: Album; lang: Lang }) {
-  return (
-    <div className="relative h-full w-full overflow-hidden bg-[#0b0908]">
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(120% 90% at 20% 10%, rgba(255,90,43,0.35) 0%, rgba(255,90,43,0.05) 45%, transparent 70%), linear-gradient(160deg, #140f0d 0%, #070605 100%)",
-        }}
-      />
-      {/* groove rings */}
-      <div
-        aria-hidden
-        className="absolute left-1/2 top-1/2 h-[78%] w-[78%] -translate-x-1/2 -translate-y-1/2 rounded-full"
-        style={{
-          background:
-            "repeating-radial-gradient(circle at 50% 50%, rgba(242,237,230,0.10) 0 1px, transparent 1px 7px)",
-        }}
-      />
-      <div
-        aria-hidden
-        className="absolute left-1/2 top-1/2 h-[18%] w-[18%] -translate-x-1/2 -translate-y-1/2 rounded-full"
-        style={{ background: "radial-gradient(circle, #ff5a2b 0%, #7a1f08 70%)" }}
-      />
-      <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-8">
-        <p className="mono-label text-bone/40">{tx(album.kind, lang)}</p>
-        <div>
-          <p className={cn("font-display text-3xl leading-none text-bone sm:text-4xl", lang === "fa" && "text-2xl")}>
-            {tx(album.title, lang)}
-          </p>
-          <p className="mono-label mt-2 text-bone/35">Picksaw — {album.year}</p>
-        </div>
-      </div>
     </div>
   );
 }

@@ -4,7 +4,7 @@ import Room from "../components/shell/Room";
 import { WORLDS, t as tx } from "../config/portfolio";
 import { SITE_TEXTS, type Lang } from "../config/siteTexts";
 import { usePointer, useElementProgress } from "../lib/motion";
-import Art from "../components/ui/Art";
+import Unfold from "../components/scroll/Unfold";
 import { cn } from "../utils/cn";
 
 /**
@@ -125,17 +125,17 @@ function WorldPlate({
             transition: "transform 0.5s cubic-bezier(0.22,1,0.36,1)",
           }}
         >
-          {/* letterbox bar top */}
+          {/* the projector's shutter opens as the plate comes up */}
           <div
-            className="aspect-[21/10] w-full overflow-hidden sm:aspect-[21/9]"
+            className="w-full"
             style={{ transform: `translateY(${shift.toFixed(2)}px)` }}
           >
-            <Art
+            <Unfold
+              variant="aperture"
               src={world.image}
               alt={tx(world.title, lang)}
               priority={index === 0}
-              className="scale-[1.06] transition-transform duration-1000 group-hover:scale-100"
-              wrapperClassName="will-change-transform"
+              className="aspect-[21/10] w-full sm:aspect-[21/9]"
             />
           </div>
 

@@ -4,9 +4,20 @@ import { motion } from "motion/react";
 import { ROOMS, roomLabel } from "../../config/portfolio";
 import { SITE_TEXTS, type Lang } from "../../config/siteTexts";
 import { useRevealObserver } from "../../lib/motion";
+import StormLayer from "../storm/StormLayer";
 import { cn } from "../../utils/cn";
 
 type RoomClass = "room-work" | "room-worlds" | "room-ai" | "room-sound" | "room-about" | "room-contact";
+
+/** Which rooms are lit by the storm, and how hard the weather hits. */
+const WEATHER: Record<RoomClass, { mode: "dark" | "light"; intensity: number; lightning?: boolean }> = {
+  "room-work": { mode: "light", intensity: 0.55 },
+  "room-worlds": { mode: "dark", intensity: 1.15, lightning: true },
+  "room-ai": { mode: "light", intensity: 0.35 },
+  "room-sound": { mode: "dark", intensity: 0.7 },
+  "room-about": { mode: "dark", intensity: 0.5 },
+  "room-contact": { mode: "light", intensity: 0.4 },
+};
 
 interface RoomProps {
   /** palette class — each room has its own light */
@@ -39,8 +50,14 @@ export default function Room({ tone, lang, children, current, noNext }: RoomProp
   const idx = current ? ROOMS.findIndex((r) => r.key === current) : -1;
   const next = idx >= 0 ? ROOMS[(idx + 1) % ROOMS.length] : null;
 
+  const weather = WEATHER[tone];
+
   return (
     <div className={cn("relative min-h-screen", tone)}>
+      {/* the sky never leaves — every room keeps the storm atmosphere,
+          only the light and the density change */}
+      <StormLayer mode={weather.mode} intensity={weather.intensity} lightning={weather.lightning ?? false} />
+
       {/* fine grain over every room — ties the palettes together */}
       <div aria-hidden className="grain-layer pointer-events-none fixed inset-0 z-[1]" />
 

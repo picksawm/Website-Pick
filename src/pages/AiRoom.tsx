@@ -4,6 +4,7 @@ import Room from "../components/shell/Room";
 import { AI_PIECES, t as tx } from "../config/portfolio";
 import { SITE_TEXTS, type Lang } from "../config/siteTexts";
 import Art from "../components/ui/Art";
+import Unfold from "../components/scroll/Unfold";
 import { cn } from "../utils/cn";
 
 /**
@@ -59,6 +60,29 @@ export default function AiRoom({ lang }: { lang: Lang }) {
               <p className="mono-label mt-5 opacity-40">{t.aiCaptionNote}</p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ── the featured work blooms open ─────────────────────── */}
+      <section className="px-5 pb-14 sm:px-8">
+        <div className="mx-auto max-w-[1680px]">
+          <Unfold
+            variant="bloom"
+            src={AI_PIECES[0].image}
+            alt={tx(AI_PIECES[0].title, lang)}
+            priority
+            className="aspect-[16/9] w-full sm:aspect-[21/9]"
+          >
+            <div className="absolute inset-x-0 bottom-0 z-[3] flex flex-wrap items-end justify-between gap-3 bg-gradient-to-t from-black/55 to-transparent p-4 sm:p-6">
+              <div>
+                <p className="mono-label text-white/55">{tx(AI_PIECES[0].medium, lang)}</p>
+                <h2 className="font-display text-2xl leading-tight text-white sm:text-3xl">
+                  {tx(AI_PIECES[0].title, lang)}
+                </h2>
+              </div>
+              <span className="mono-label text-white/45">{AI_PIECES[0].year}</span>
+            </div>
+          </Unfold>
         </div>
       </section>
 
