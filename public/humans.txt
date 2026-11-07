@@ -21,6 +21,8 @@ symbolic storytelling, black-and-white contrast with selective color,
 nature mixed with technology.
 
 /* SITE */
-Products: Verda, Lumina, Clarity, Pulse, Aurora, Lumen templates; Stormblade game
-Stack: React, TypeScript, Three.js / React Three Fiber, Unreal Engine, Vite, Tailwind CSS
+Rooms: Work, Worlds, AI Art, Sound, About, Contact — plus the Journal
+Stack: React, TypeScript, Vite, Tailwind CSS, Lenis, Motion. No 3D engine on the site itself;
+Unreal Engine is used for the Worlds work, not shipped to the browser.
+Type: Instrument Serif + Inter, Persian in Vazirmatn.
 Languages: English, Persian (فارسی)

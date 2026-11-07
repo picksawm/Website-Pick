@@ -2,7 +2,7 @@
 
 > **PICKSAW** is the creative identity of **Amirehsan Ashoori** (Persian: **امیراحسان عاشوری**) — a multidisciplinary creator who brings together technology, design, art, music and storytelling. Rather than focusing on a single medium, Amirehsan builds across whatever helps an idea come to life: websites, 3D worlds, cinematic edits, music and AI-generated concepts. He treats creativity as one connected ecosystem where code, visuals, sound and atmosphere work together.
 
-The flagship website (picksaw.ir) is an immersive WebGL experience — a walkable 3D city with switchable atmospheres (a night thunderstorm, sunrise and sunset in clear and cloudy weather), an animated 3D "P" logo and a holographic ghost card — showcasing premium cinematic website templates (Verda, Lumina, Clarity, Pulse, Aurora, Lumen), a content feed and the Stormblade game.
+The flagship website (picksaw.ir) is an image-first portfolio organised as six rooms, each with its own art direction: **Work** (editorial paper-and-ink monograph), **Worlds** (3D environments on a cinematic projection reel), **AI Art** (white-cube gallery), **Sound** (black listening room), **About** (magazine feature) and **Contact** (letterpress). A seventh, **Journal**, collects studio uploads. The site is deliberately not a 3D/WebGL experience — it is built for fast image loading, long-form reading and quiet motion.
 
 ## Identity
 
@@ -31,12 +31,21 @@ Cyberpunk and futuristic worlds; Persian art and cultural influences; cinematic 
 
 Web design, front-end development, UI/UX design, 3D environment creation, Unreal Engine, creative coding, AI art, AI video, digital illustration, motion design, music production, rap & lyric writing, sound design, visual branding, concept development, digital storytelling.
 
-## Products & links
+## The rooms
 
-- [Picksaw — main site](https://picksaw.ir/): Cinematic templates, feed and the Stormblade game.
-- [Verda template](https://picksaw.ir/verda/), [Lumina template](https://picksaw.ir/lumina/), [Clarity template](https://picksaw.ir/clarity/), [Pulse template](https://picksaw.ir/pulse/), [Aurora template](https://picksaw.ir/aurora/), [Lumen template](https://picksaw.ir/lumen/): Premium Picksaw website templates.
+- [Work](https://picksaw.ir/#/work): Websites, visual identities and creative-code projects.
+- [Worlds](https://picksaw.ir/#/worlds): 3D environments and Unreal Engine scenes.
+- [AI Art](https://picksaw.ir/#/ai): Generative images, concepts and motion studies.
+- [Sound](https://picksaw.ir/#/sound): Music production, rap writing, scores and sound design.
+- [About](https://picksaw.ir/#/about): Amirehsan Ashoori — biography, style, skills, timeline.
+- [Contact](https://picksaw.ir/#/contact): WhatsApp, phone, email, Instagram.
+- [Journal](https://picksaw.ir/#/journal): Studio notes and uploads.
+
+## Links
+
+- [Picksaw — main site](https://picksaw.ir/): The image-first portfolio.
 - [Stormblade game](https://stormblade.picksaw.ir/): The first game published under Picksaw.
 
 ## Keywords
 
-Picksaw, PICKSAW, Amirehsan Ashoori, Amir Ehsan Ashoori, AmirEhsan Ashoori, امیراحسان عاشوری, creative developer Iran, multidisciplinary artist, cinematic website, interactive 3D website, Unreal Engine artist, AI art, AI video, music production, rap, creative coding, visual branding, قالب وب‌سایت, قالب سایت
+Picksaw, PICKSAW, Amirehsan Ashoori, Amir Ehsan Ashoori, AmirEhsan Ashoori, امیراحسان عاشوری, creative developer Iran, multidisciplinary artist, portfolio, image-first portfolio, editorial web design, Unreal Engine artist, AI art, AI video, music production, rap, creative coding, visual branding, نمونه کار, طراحی سایت, پورتفولیو

@@ -9,12 +9,12 @@ ownership access).
 | File | Purpose |
 |---|---|
 | `index.html` `<head>` | Title, description, keywords, canonical, robots, geo, Open Graph + Twitter cards, theme color |
-| `index.html` JSON-LD `@graph` | Organization + **Person (Amirehsan Ashoori)** linked via `founder`, WebSite, WebPage, template ItemList, Stormblade VideoGame |
+| `index.html` JSON-LD `@graph` | Organization + **Person (Amirehsan Ashoori)** linked via `founder`, WebSite, CollectionPage listing the six rooms, Stormblade VideoGame |
 | `public/og-image.png` | 1200×630 social/share card (brand mark, tagline, founder) |
 | `public/favicon.svg`, `icon-192.png`, `icon-512.png`, `apple-touch-icon.png` | Favicons + app icons |
 | `public/site.webmanifest` | PWA manifest (name, brand, icons, colors) |
 | `public/robots.txt` | Allows crawling, points to the sitemap |
-| `public/sitemap.xml` | Main site + every template subdomain + Stormblade |
+| `public/sitemap.xml` | Main site + the six room routes + Journal |
 | `public/llms.txt`, `public/llms-full.txt` | Plain-language briefs for LLM crawlers (who Amirehsan Ashoori / PICKSAW is, every product and verified profile) |
 | `public/humans.txt` | Human-readable credits |
 | `public/.nojekyll` | Ensures GitHub Pages serves every file (incl. dotfiles/txt) |

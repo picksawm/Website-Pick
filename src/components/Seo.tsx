@@ -3,127 +3,121 @@ import { useLocation } from "react-router-dom";
 import type { Lang } from "../config/siteTexts";
 
 /**
- * Seo — runtime companion to the static head in index.html. The static
- * head (title, Open Graph/Twitter cards and the JSON-LD knowledge graph
- * linking Amirehsan Ashoori to PICKSAW) ships without JS for crawlers;
- * this component keeps <html lang> correct after a language toggle and
- * retitles the document + swaps canonical/meta when the visitor walks
- * between routes (Home / About / Feed).
+ * Seo — runtime companion to the static head in index.html.
+ * Keeps <html lang/dir>, the document title, description and canonical
+ * URL correct as the visitor walks between rooms.
  */
 
 const SITE = "https://picksaw.ir";
 
-const ROUTES = {
+const ROUTES: Record<Lang, Record<string, { title: string; desc: string }>> = {
   en: {
     "/": {
-      title: "PICKSAW — Cinematic Websites, 3D Worlds & AI Art by Amirehsan Ashoori",
-      desc: "PICKSAW is the creative studio of Amirehsan Ashoori — web design, 3D & Unreal, AI art and video, music, creative coding and branding from Iran.",
+      title: "PICKSAW — Amirehsan Ashoori · Portfolio",
+      desc: "The working archive of Amirehsan Ashoori: websites, 3D environments, AI art and music. An image-first portfolio in six rooms.",
+    },
+    "/work": {
+      title: "Work — Websites, identity & creative code · PICKSAW",
+      desc: "Selected websites, visual identities and creative-code projects by Amirehsan Ashoori, built as editorial, image-first experiences.",
+    },
+    "/worlds": {
+      title: "Worlds — 3D environments & Unreal Engine · PICKSAW",
+      desc: "Cinematic 3D environments, procedural architecture and real-time scenes built in Unreal Engine by Amirehsan Ashoori.",
+    },
+    "/ai": {
+      title: "AI Art — Generative images & concepts · PICKSAW",
+      desc: "Generative images and concept work by Amirehsan Ashoori — Persian miniature meets chrome, machine dreams edited by hand.",
+    },
+    "/sound": {
+      title: "Sound — Music, rap & score · PICKSAW",
+      desc: "Music production, rap writing and sound design for trailers, games and brand films by Amirehsan Ashoori.",
     },
     "/about": {
       title: "About Amirehsan Ashoori — Founder of PICKSAW",
       desc: "Amirehsan Ashoori is the founder, creative developer, designer and multidisciplinary artist behind PICKSAW — web, 3D/Unreal, AI art, music, creative coding and branding.",
     },
-    "/feed": {
-      title: "Feed & Game — PICKSAW",
-      desc: "Latest uploads, updates and the featured StormBlade game from PICKSAW by Amirehsan Ashoori.",
+    "/contact": {
+      title: "Contact — Start a project · PICKSAW",
+      desc: "Work with Amirehsan Ashoori (PICKSAW) on websites, 3D environments, AI art or music. WhatsApp, phone, email and Instagram.",
+    },
+    "/journal": {
+      title: "Journal — Notes & uploads · PICKSAW",
+      desc: "Latest uploads and studio notes from PICKSAW by Amirehsan Ashoori.",
     },
   },
   fa: {
     "/": {
-      title: "PICKSAW — وب‌سایت‌های سینمایی، دنیاهای سه‌بعدی و هنر هوش مصنوعی | امیراحسان عاشوری",
-      desc: "PICKSAW استودیوی خلاق امیراحسان عاشوری است — طراحی وب، سه‌بعدی و Unreal، هنر و ویدیوی هوش مصنوعی، موسیقی، کدنویسی خلاقانه و برندینگ.",
+      title: "پیکساو — امیراحسان عاشوری · نمونه‌کارها",
+      desc: "آرشیو کاری امیراحسان عاشوری: وب‌سایت، محیط سه‌بعدی، هنر هوش مصنوعی و موسیقی. نمونه‌کاری تصویرمحور در شش اتاق.",
+    },
+    "/work": {
+      title: "کارها — وب‌سایت، هویت بصری و کد خلاقانه · پیکساو",
+      desc: "گزیده‌ی وب‌سایت‌ها، هویت‌های بصری و پروژه‌های کد خلاقانه‌ی امیراحسان عاشوری، ساخته‌شده به‌صورت تجربه‌های ادیتوریال و تصویرمحور.",
+    },
+    "/worlds": {
+      title: "دنیاها — محیط سه‌بعدی و Unreal Engine · پیکساو",
+      desc: "محیط‌های سینمایی سه‌بعدی، معماری رویه‌ای و صحنه‌های بلادرنگ ساخته‌شده در Unreal Engine توسط امیراحسان عاشوری.",
+    },
+    "/ai": {
+      title: "هنر هوش مصنوعی — تصاویر مولد و مفاهیم · پیکساو",
+      desc: "تصاویر مولد و کارهای مفهومی امیراحسان عاشوری — نگارگری ایرانی در کنار کروم، رؤیای ماشین با تدوین انسانی.",
+    },
+    "/sound": {
+      title: "صدا — موسیقی، رپ و موسیقی متن · پیکساو",
+      desc: "تولید موسیقی، ترانه‌نویسی رپ و طراحی صدا برای تیزر، بازی و فیلم برند توسط امیراحسان عاشوری.",
     },
     "/about": {
-      title: "درباره امیراحسان عاشوری — بنیان‌گذار PICKSAW",
-      desc: "امیراحسان عاشوری بنیان‌گذار، توسعه‌دهنده خلاق، طراح و هنرمند چندرشته‌ای پشت PICKSAW است؛ وب، سه‌بعدی/Unreal، هنر هوش مصنوعی، موسیقی، کدنویسی خلاقانه و برندینگ.",
+      title: "درباره امیراحسان عاشوری — بنیان‌گذار پیکساو",
+      desc: "امیراحسان عاشوری بنیان‌گذار، توسعه‌دهنده خلاق، طراح و هنرمند چندرشته‌ای پشت پیکساو است؛ وب، سه‌بعدی/Unreal، هنر هوش مصنوعی، موسیقی، کدنویسی خلاقانه و برندینگ.",
     },
-    "/feed": {
-      title: "فید و بازی — PICKSAW",
-      desc: "آخرین آپلودها، به‌روزرسانی‌ها و بازی ویژه StormBlade از PICKSAW.",
+    "/contact": {
+      title: "تماس — شروع یک پروژه · پیکساو",
+      desc: "همکاری با امیراحسان عاشوری (پیکساو) برای وب‌سایت، محیط سه‌بعدی، هنر هوش مصنوعی یا موسیقی. واتس‌اپ، تماس، ایمیل و اینستاگرام.",
+    },
+    "/journal": {
+      title: "ژورنال — یادداشت‌ها و آپلودها · پیکساو",
+      desc: "آخرین آپلودها و یادداشت‌های استودیو از پیکساو، امیراحسان عاشوری.",
     },
   },
-} as const;
-
-/** Route-specific JSON-LD — the About page doubles down on Person
- *  attribution so AI assistants and Google tie PICKSAW to the founder. */
-function aboutJsonLd(lang: Lang) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "AboutPage",
-    url: `${SITE}/#/about`,
-    inLanguage: lang === "fa" ? "fa-IR" : "en",
-    about: {
-      "@type": "Person",
-      "@id": `${SITE}/#amir`,
-      name: "Amirehsan Ashoori",
-      alternateName: ["امیراحسان عاشوری", "Amir Ehsan Ashoori", "AmirEhsan Ashoori"],
-      url: SITE + "/",
-      jobTitle:
-        "Founder, Creative Developer, Designer & Multidisciplinary Artist",
-      nationality: "IR",
-      knowsLanguage: ["English", "Persian"],
-      founderOf: {
-        "@type": "Organization",
-        name: "PICKSAW",
-        url: SITE + "/",
-      },
-      sameAs: [
-        "https://www.instagram.com/picksawm/",
-        "https://wa.me/989380215823",
-      ],
-    },
-  };
-}
-
-function setMeta(attr: "name" | "property", key: string, content: string) {
-  let el = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`);
-  if (!el) {
-    el = document.createElement("meta");
-    el.setAttribute(attr, key);
-    document.head.appendChild(el);
-  }
-  el.setAttribute("content", content);
-}
+};
 
 export default function Seo({ lang }: { lang: Lang }) {
   const { pathname } = useLocation();
-  const route = pathname as keyof (typeof ROUTES)["en"];
 
   useEffect(() => {
-    document.documentElement.lang = lang === "fa" ? "fa-IR" : "en";
-  }, [lang]);
+    document.documentElement.lang = lang === "fa" ? "fa" : "en";
+    document.documentElement.dir = lang === "fa" ? "rtl" : "ltr";
 
-  useEffect(() => {
-    const map = ROUTES[lang][route] ?? ROUTES[lang]["/"];
-    document.title = map.title;
-    setMeta("name", "description", map.desc);
-    setMeta("property", "og:title", map.title);
-    setMeta("property", "og:description", map.desc);
-    setMeta("property", "twitter:title", map.title);
-    setMeta("property", "twitter:description", map.desc);
+    const meta = ROUTES[lang][pathname] ?? ROUTES[lang]["/"];
+    document.title = meta.title;
 
-    // canonical + og:url follow the active route (hash router)
-    const url = `${SITE}/${route === "/" ? "" : `#${route}`}`;
-    let link = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
-    if (!link) {
-      link = document.createElement("link");
-      link.setAttribute("rel", "canonical");
-      document.head.appendChild(link);
+    const setMeta = (selector: string, attr: string, key: string, value: string) => {
+      let el = document.head.querySelector<HTMLMetaElement>(selector);
+      if (!el) {
+        el = document.createElement("meta");
+        el.setAttribute(attr, key);
+        document.head.appendChild(el);
+      }
+      el.setAttribute("content", value);
+    };
+
+    setMeta('meta[name="description"]', "name", "description", meta.desc);
+    setMeta('meta[property="og:title"]', "property", "og:title", meta.title);
+    setMeta('meta[property="og:description"]', "property", "og:description", meta.desc);
+    setMeta('meta[name="twitter:title"]', "name", "twitter:title", meta.title);
+    setMeta('meta[name="twitter:description"]', "name", "twitter:description", meta.desc);
+
+    const url = pathname === "/" ? `${SITE}/` : `${SITE}/#${pathname}`;
+    setMeta('meta[property="og:url"]', "property", "og:url", url);
+
+    let canonical = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement("link");
+      canonical.rel = "canonical";
+      document.head.appendChild(canonical);
     }
-    link.setAttribute("href", url);
-    setMeta("property", "og:url", url);
-
-    // route-scoped JSON-LD
-    const OLD_ID = "route-jsonld";
-    document.getElementById(OLD_ID)?.remove();
-    if (route === "/about") {
-      const s = document.createElement("script");
-      s.type = "application/ld+json";
-      s.id = OLD_ID;
-      s.textContent = JSON.stringify(aboutJsonLd(lang));
-      document.head.appendChild(s);
-    }
-  }, [lang, route]);
+    canonical.href = url;
+  }, [lang, pathname]);
 
   return null;
 }
