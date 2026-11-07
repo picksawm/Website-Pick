@@ -7,12 +7,17 @@
     "dev": "vite",
     "build": "vite build && node scripts/prerender.mjs && node scripts/legacy-redirects.mjs",
     "preview": "vite preview",
-    "frames": "node scripts/build-frames.mjs"
+    "frames": "node scripts/build-frames.mjs",
+    "wordmark": "node scripts/build-wordmark.mjs"
   },
   "dependencies": {
+    "@fontsource-variable/cormorant-garamond": "^5.3.0",
     "@fontsource-variable/inter": "^5.3.0",
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@fontsource-variable/manrope": "^5.3.0",
+    "@fontsource-variable/space-grotesk": "^5.3.0",
     "@fontsource-variable/vazirmatn": "^5.3.0",
+    "@fontsource/bodoni-moda": "^5.3.0",
     "@fontsource/instrument-serif": "^5.3.0",
     "@gsap/react": "^2.1.2",
     "clsx": "2.1.1",

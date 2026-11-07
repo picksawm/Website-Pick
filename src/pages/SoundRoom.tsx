@@ -84,7 +84,7 @@ export default function SoundRoom({ lang }: { lang: Lang }) {
                   type="button"
                   onClick={() => setAlbumIndex(i)}
                   className={cn(
-                    "mono-label rounded-full border px-3 py-1.5 transition-all duration-300",
+                    "mono-label border-b px-0.5 py-1 transition-colors duration-300",
                     i === albumIndex
                       ? "border-[color:var(--room-accent)] text-[color:var(--room-accent)]"
                       : "opacity-45 hover:opacity-90"
@@ -204,7 +204,7 @@ function Player({ album, lang }: { album: Album; lang: Lang }) {
             disabled={!hasAudio}
             aria-label={playing ? t.soundPause : t.soundPlay}
             className={cn(
-              "flex h-11 w-11 shrink-0 items-center justify-center rounded-full border transition-all",
+              "flex h-11 w-9 shrink-0 items-center justify-center border-b transition-all",
               hasAudio
                 ? "border-[color:var(--room-accent)] text-[color:var(--room-accent)] hover:bg-[color:var(--room-accent)] hover:text-black"
                 : "cursor-not-allowed border-white/15 text-white/25"

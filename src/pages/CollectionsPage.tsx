@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { motion } from "motion/react";
 import Room from "../components/shell/Room";
 import {
   collectionsSorted,
@@ -14,9 +13,19 @@ import { cn } from "../utils/cn";
 /**
  * CollectionsPage — /work
  *
- * The index of the six Articksaw directions. Counts come from published
- * artwork data, so a collection with nothing published says so honestly
- * instead of showing fake thumbnails.
+ * The index of the six Articksaw directions, laid out as a printed
+ * catalogue rather than a card grid: numbered entries, a wide measure
+ * for the direction's own voice, and a hairline that runs the full width.
+ *
+ * Two things it deliberately does not do:
+ *   • fake thumbnails — counts come from published data, and a direction
+ *     with nothing published says so in its own column
+ *   • pill the metadata — pillars are set as small caps in a run, the way
+ *     a catalogue prints keywords under a plate
+ *
+ * The layout is asymmetric on purpose: the entry number is a wide
+ * gutter, the title takes more columns than the description, and the
+ * whole block steps in from the left edge at each breakpoint.
  */
 export default function CollectionsPage({ lang }: { lang: Lang }) {
   const t = SITE_TEXTS[lang];
@@ -25,98 +34,117 @@ export default function CollectionsPage({ lang }: { lang: Lang }) {
 
   return (
     <Room tone="room-work" lang={lang} current="work">
-      <section className="px-5 pb-10 pt-28 sm:px-8 sm:pt-36">
-        <div className="mx-auto max-w-[1680px]">
-          <div
-            className="flex flex-wrap items-baseline justify-between gap-3 border-b pb-4"
-            style={{ borderColor: "var(--room-line)" }}
-          >
-            <p className="eyebrow opacity-60">Articksaw — {t.navWork}</p>
-            <p className="mono-label opacity-45">
-              {collections.length} {lang === "fa" ? "مجموعه" : "collections"} ·{" "}
-              {published} {lang === "fa" ? "اثر منتشرشده" : "published works"}
-            </p>
-          </div>
-
-          <h1 className="display-xl mt-8 max-w-[13ch] text-balance">
-            {lang === "fa" ? "شش جهتِ یک هویت" : "Six directions, one hand"}
-          </h1>
-          <p className="mt-6 max-w-xl text-pretty text-sm leading-relaxed opacity-70">
-            {lang === "fa"
-              ? "هر مجموعه یک جهت خلاقانه است، نه یک قالب بصری. هر اثر هویت خودش را نگه می‌دارد."
-              : "Each collection is a creative direction, not a visual template. Every artwork keeps its own identity."}
+      {/* ── masthead ─────────────────────────────────────────────── */}
+      <header className="page-shell pt-32 sm:pt-40">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2 pb-4">
+          <p className="eyebrow">Articksaw</p>
+          <p className="plate">
+            {collections.length} {lang === "fa" ? "مجموعه" : "directions"}
+            <span className="mx-2 opacity-40">/</span>
+            {published} {lang === "fa" ? "اثر منتشرشده" : "published"}
           </p>
         </div>
-      </section>
 
-      <section className="px-5 pb-24 sm:px-8">
-        <div className="mx-auto max-w-[1680px]">
-          <ul className="border-t" style={{ borderColor: "var(--room-line)" }}>
-            {collections.map((c, i) => {
-              const count = collectionCount(c.id);
-              const live = count > 0;
-              return (
-                <motion.li
-                  key={c.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-6%" }}
-                  transition={{ duration: 0.7, delay: i * 0.04, ease: [0.22, 1, 0.36, 1] }}
-                  className="border-b"
-                  style={{ borderColor: "var(--room-line)" }}
-                >
-                  <Link
-                    to={`/collections/${c.slug}`}
-                    className="group grid grid-cols-12 items-baseline gap-3 py-6 sm:py-8"
-                  >
-                    <span className="mono-label col-span-2 opacity-30 sm:col-span-1">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
+        <div className="blade mt-2 grid grid-cols-12 gap-x-6 gap-y-10 pt-8">
+          <h1
+            className={cn(
+              "display-xl col-span-12 text-balance lg:col-span-8",
+              lang === "fa" && "leading-[1.1]"
+            )}
+          >
+            {lang === "fa" ? (
+              "شش جهت، یک دست"
+            ) : (
+              <>
+                Six directions,
+                <br />
+                <span className="voice text-[0.62em] leading-[1.1] opacity-90">one hand</span>
+              </>
+            )}
+          </h1>
 
-                    <div className="col-span-10 sm:col-span-5">
-                      <h2
-                        className={cn(
-                          "font-display text-[1.7rem] leading-none tracking-tight transition-transform duration-500 group-hover:translate-x-1.5 sm:text-[2.6rem]",
-                          lang === "fa" && "text-xl sm:text-2xl"
-                        )}
-                      >
-                        {tx(c.name, lang)}
-                      </h2>
-                      <p className="mono-label mt-2 opacity-45">{tx(c.tagline, lang)}</p>
-                    </div>
-
-                    <p className="col-span-12 mt-2 text-xs leading-relaxed opacity-55 sm:col-span-4 sm:mt-0">
-                      {tx(c.character, lang)}
-                    </p>
-
-                    <div className="col-span-9 mt-2 flex flex-wrap gap-1.5 sm:col-span-1 sm:mt-0 sm:justify-end">
-                      {collectionPillars(c)
-                        .slice(0, 2)
-                        .map((p) => (
-                          <span
-                            key={p.id}
-                            className="mono-label rounded-full border px-2 py-0.5 text-[9px] opacity-45"
-                            style={{ borderColor: "var(--room-line)" }}
-                          >
-                            {p.name.en.split(" ")[0]}
-                          </span>
-                        ))}
-                    </div>
-
-                    <div className="col-span-3 flex items-center justify-end gap-2 sm:col-span-1">
-                      <span className="mono-label opacity-40">
-                        {live ? `${count}` : lang === "fa" ? "به‌زودی" : "soon"}
-                      </span>
-                      <span className="text-xs opacity-30 transition-transform duration-500 group-hover:translate-x-1">
-                        →
-                      </span>
-                    </div>
-                  </Link>
-                </motion.li>
-              );
-            })}
-          </ul>
+          <div className="col-span-12 self-end lg:col-span-3 lg:col-start-10">
+            <p className="lede">
+              {lang === "fa"
+                ? "هر مجموعه یک جهت خلاقانه است، نه یک قالب بصری. هر اثر هویت خودش را نگه می‌دارد."
+                : "Each collection is a creative direction, not a template. Every work keeps its own identity."}
+            </p>
+          </div>
         </div>
+      </header>
+
+      {/* ── the catalogue ────────────────────────────────────────── */}
+      <section className="page-shell mt-20 pb-28 sm:mt-28">
+        <div className="hair-t">
+          {collections.map((c, i) => {
+            const count = collectionCount(c.id);
+            const pillars = collectionPillars(c);
+
+            return (
+              <Link
+                key={c.id}
+                to={`/collections/${c.slug}`}
+                className="group grid grid-cols-12 items-start gap-x-5 gap-y-3 border-b py-8 transition-colors duration-500 hover:bg-[rgba(239,233,220,0.018)] sm:py-10"
+                style={{ borderColor: "var(--hair)" }}
+              >
+                {/* the gutter: a catalogue number, set small and high */}
+                <span className="plate col-span-2 pt-2 sm:col-span-1">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+
+                {/* the title carries the entry */}
+                <h2
+                  className={cn(
+                    "font-display col-span-10 text-[clamp(1.9rem,4.4vw,3.6rem)] leading-[0.95] tracking-[-0.03em] transition-transform duration-700 [transition-timing-function:var(--ease-out)] group-hover:translate-x-2 sm:col-span-6",
+                    lang === "fa" && "text-[clamp(1.5rem,3.4vw,2.4rem)] leading-[1.15]"
+                  )}
+                >
+                  {tx(c.name, lang)}
+                </h2>
+
+                {/* the direction's own voice — one line, italic, quiet */}
+                <p className="col-span-10 col-start-3 text-[0.9375rem] leading-relaxed text-[var(--color-bone-dim)] sm:col-span-4 sm:col-start-8">
+                  {tx(c.tagline, lang)}
+                </p>
+
+                {/* meta: pillars as a printed keyword run, then the tally */}
+                <div className="col-span-10 col-start-3 mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 sm:col-span-4 sm:col-start-8 sm:mt-0">
+                  <span className="plate">
+                    {pillars
+                      .slice(0, 2)
+                      .map((p) => tx(p.name, lang))
+                      .join(" · ")}
+                  </span>
+                  <span className="plate text-[var(--color-bone-dim)]">
+                    {count > 0
+                      ? `${String(count).padStart(2, "0")} ${lang === "fa" ? "اثر" : "works"}`
+                      : lang === "fa"
+                        ? "در دست آماده‌سازی"
+                        : "in preparation"}
+                  </span>
+                </div>
+
+                {/* the arrow: present, never a button */}
+                <span
+                  aria-hidden
+                  className="col-span-2 hidden justify-self-end pt-2 text-sm opacity-25 transition-all duration-500 group-hover:translate-x-1 group-hover:opacity-70 sm:col-span-1 sm:block"
+                >
+                  {lang === "fa" ? "←" : "→"}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* closing note, set as a colophon */}
+        <p className="voice mt-16 max-w-[26ch] text-[clamp(1.3rem,2.6vw,1.9rem)] text-[var(--color-bone-dim)]">
+          {lang === "fa"
+            ? "آثار یکی‌یکی از راه می‌رسند."
+            : "The works arrive one at a time."}
+        </p>
+        <p className="plate mt-3">
+          {t.ownerName} · {t.city} · 2026
+        </p>
       </section>
     </Room>
   );

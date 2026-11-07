@@ -156,7 +156,7 @@ export default function AboutRoom({ lang }: { lang: Lang }) {
               {ABOUT.skills.map((s, i) => (
                 <span
                   key={tx(s, "en")}
-                  className="reveal rounded-full border px-3.5 py-1.5 text-xs opacity-75"
+                  className="reveal plate"
                   style={{ borderColor: "var(--room-line)", transitionDelay: `${(i % 8) * 35}ms` }}
                 >
                   {tx(s, lang)}

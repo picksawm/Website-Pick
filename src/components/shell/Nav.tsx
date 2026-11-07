@@ -5,6 +5,7 @@ import { ROOMS, roomLabel } from "../../config/portfolio";
 import { SITE_TEXTS, type Lang } from "../../config/siteTexts";
 import { usePageProgress } from "../../lib/motion";
 import { cn } from "../../utils/cn";
+import Wordmark from "../brand/Wordmark";
 
 interface NavProps {
   lang: Lang;
@@ -14,7 +15,9 @@ interface NavProps {
 }
 
 /** Which rooms are dark? Drives the nav ink so it never disappears. */
-const DARK_ROOMS = ["/worlds", "/sound", "/about"];
+/* The exhibition is dark end to end now, so the nav is always set in
+   ivory — except over the one room that inverts (contact). */
+const LIGHT_ROOMS = ["/contact"];
 
 export default function Nav({ lang, onToggleLang, isAdmin, onAdminOpen }: NavProps) {
   const t = SITE_TEXTS[lang];
@@ -24,8 +27,7 @@ export default function Nav({ lang, onToggleLang, isAdmin, onAdminOpen }: NavPro
   const [scrolled, setScrolled] = useState(false);
   const [hovered, setHovered] = useState<number | null>(null);
 
-  const onCover = location.pathname === "/";
-  const dark = onCover || DARK_ROOMS.includes(location.pathname) || location.pathname === "/journal";
+  const dark = !LIGHT_ROOMS.some((p) => location.pathname.startsWith(p));
 
   useEffect(() => setOpen(false), [location.pathname]);
 
@@ -80,12 +82,11 @@ export default function Nav({ lang, onToggleLang, isAdmin, onAdminOpen }: NavPro
             )}
             aria-label="Picksaw — home"
           >
-            <span className="font-display text-[1.35rem] leading-none tracking-tight sm:text-2xl">
-              Picksaw
-            </span>
+            {/* the mark, not the word set in a font */}
+            <Wordmark className="h-[0.62rem] w-auto shrink-0 sm:h-[0.72rem]" />
             <span
               className={cn(
-                "mono-label hidden pb-0.5 opacity-50 transition-opacity group-hover:opacity-90 sm:inline",
+                "plate hidden pb-0.5 opacity-45 transition-opacity group-hover:opacity-90 sm:inline",
                 lang === "fa" && "hidden"
               )}
             >
@@ -99,10 +100,10 @@ export default function Nav({ lang, onToggleLang, isAdmin, onAdminOpen }: NavPro
               type="button"
               onClick={onToggleLang}
               className={cn(
-                "mono-label rounded-full border px-3 py-1.5 transition-all duration-300",
+                "mono-label px-1 py-1 transition-colors duration-300 border-b",
                 open || dark
-                  ? "border-bone/20 text-bone/70 hover:border-bone/45 hover:text-bone"
-                  : "border-[#12110f]/20 text-[#12110f]/60 hover:border-[#12110f]/45 hover:text-[#12110f]"
+                  ? "border-bone/25 text-bone/60 hover:border-bone/60 hover:text-bone"
+                  : "border-[#12110f]/25 text-[#12110f]/55 hover:border-[#12110f]/60 hover:text-[#12110f]"
               )}
               aria-label="Switch language"
             >
@@ -166,7 +167,7 @@ export default function Nav({ lang, onToggleLang, isAdmin, onAdminOpen }: NavPro
             exit={{ opacity: 0 }}
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
             dir={lang === "fa" ? "rtl" : "ltr"}
-            className="fixed inset-0 z-[64] overflow-y-auto bg-[#08090b]"
+            className="fixed inset-0 z-[64] overflow-y-auto bg-[var(--color-void)]"
           >
             {/* hovered room backdrop */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -192,8 +193,9 @@ export default function Nav({ lang, onToggleLang, isAdmin, onAdminOpen }: NavPro
               <div className="absolute inset-0 bg-gradient-to-t from-[#08090b] via-[#08090b]/70 to-[#08090b]/40" />
             </div>
 
-            <div className="relative flex min-h-full flex-col justify-between px-5 pb-10 pt-28 sm:px-8 sm:pt-32">
-              <nav className="mx-auto w-full max-w-[1680px]" aria-label="Rooms">
+            <div className="page-shell relative flex min-h-full flex-col justify-between pb-10 pt-28 sm:pt-32">
+              <nav className="w-full" aria-label="Rooms">
+                <p className="eyebrow mb-6">{lang === "fa" ? "فهرست" : "Contents"}</p>
                 <ul>
                   {ROOMS.map((room, i) => {
                     const active = location.pathname === room.path;
@@ -203,27 +205,32 @@ export default function Nav({ lang, onToggleLang, isAdmin, onAdminOpen }: NavPro
                         initial={{ opacity: 0, y: 24 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.08 + i * 0.05, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                        className="border-b border-white/10"
+                        className="border-b"
+                        style={{ borderColor: "var(--hair)" }}
                         onPointerEnter={() => setHovered(i)}
                         onPointerLeave={() => setHovered(null)}
                       >
                         <Link
                           to={room.path}
-                          className="group flex items-baseline gap-4 py-4 sm:gap-8 sm:py-5"
+                          className="group flex items-baseline gap-4 py-4 sm:gap-10 sm:py-6"
                           onClick={() => setOpen(false)}
+                          aria-current={active ? "page" : undefined}
                         >
-                          <span className="mono-label w-8 shrink-0 text-bone/35">{room.number}</span>
+                          <span className="plate w-8 shrink-0">{room.number}</span>
                           <span
                             className={cn(
-                              "font-display text-[2rem] leading-[1.05] tracking-tight transition-all duration-500 sm:text-[3.4rem]",
-                              active ? "text-signal" : "text-bone group-hover:translate-x-2 group-hover:text-bone/90",
-                              lang === "fa" && "text-[1.6rem] sm:text-[2.6rem]"
+                              "font-display text-[clamp(1.9rem,7vw,3.4rem)] leading-[0.95] tracking-[-0.03em] transition-transform duration-500 [transition-timing-function:var(--ease-out)] group-hover:translate-x-2",
+                              active ? "text-[var(--color-volt)]" : "text-bone",
+                              lang === "fa" && "text-[clamp(1.5rem,5.5vw,2.4rem)] leading-[1.2]"
                             )}
                           >
                             {roomLabel(room.key, lang)}
                           </span>
-                          <span className="ml-auto hidden shrink-0 self-center text-xs text-bone/25 opacity-0 transition-opacity group-hover:opacity-100 sm:block">
-                            ↗
+                          <span
+                            aria-hidden
+                            className="ml-auto hidden shrink-0 self-center text-[0.7rem] text-bone/30 opacity-0 transition-opacity duration-500 group-hover:opacity-100 sm:block"
+                          >
+                            {lang === "fa" ? "←" : "→"}
                           </span>
                         </Link>
                       </motion.li>
@@ -233,15 +240,21 @@ export default function Nav({ lang, onToggleLang, isAdmin, onAdminOpen }: NavPro
                     initial={{ opacity: 0, y: 24 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.42, duration: 0.6 }}
-                    className="border-b border-white/10"
+                    className="border-b"
+                    style={{ borderColor: "var(--hair)" }}
                   >
                     <Link
                       to="/journal"
                       onClick={() => setOpen(false)}
-                      className="group flex items-baseline gap-4 py-4 sm:gap-8"
+                      className="group flex items-baseline gap-4 py-4 sm:gap-10 sm:py-6"
                     >
-                      <span className="mono-label w-8 shrink-0 text-bone/35">07</span>
-                      <span className="font-display text-[2rem] leading-[1.05] tracking-tight text-bone/55 transition-colors group-hover:text-bone sm:text-[3.4rem]">
+                      <span className="plate w-8 shrink-0">07</span>
+                      <span
+                        className={cn(
+                          "font-display text-[clamp(1.9rem,7vw,3.4rem)] leading-[0.95] tracking-[-0.03em] text-bone/60 transition-colors duration-500 group-hover:text-bone",
+                          lang === "fa" && "text-[clamp(1.5rem,5.5vw,2.4rem)] leading-[1.2]"
+                        )}
+                      >
                         {t.navJournal}
                       </span>
                     </Link>
@@ -253,9 +266,12 @@ export default function Nav({ lang, onToggleLang, isAdmin, onAdminOpen }: NavPro
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.55, duration: 0.6 }}
-                className="mx-auto mt-14 flex w-full max-w-[1680px] flex-col gap-4 border-t border-white/10 pt-6 text-xs text-bone/40 sm:flex-row sm:items-center sm:justify-between"
+                className="mt-14 flex w-full flex-col gap-4 border-t pt-6 sm:flex-row sm:items-baseline sm:justify-between"
+                style={{ borderColor: "var(--hair)" }}
               >
-                <p className="max-w-sm leading-relaxed">{t.coverIntro}</p>
+                <p className="voice max-w-[34ch] text-base text-[var(--color-bone-dim)]">
+                  {t.footerTagline}
+                </p>
                 <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
                   <a
                     href="https://www.instagram.com/picksawm/"

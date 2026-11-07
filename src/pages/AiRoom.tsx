@@ -171,7 +171,7 @@ export default function AiRoom({ lang }: { lang: Lang }) {
       <AnimatePresence>
         {open !== null && (
           <motion.div
-            className="fixed inset-0 z-[90] flex flex-col bg-[#fbfaf7]"
+            className="fixed inset-0 z-[90] flex flex-col bg-[#0b0b0e]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

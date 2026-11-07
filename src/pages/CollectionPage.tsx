@@ -41,59 +41,71 @@ export default function CollectionPage({ lang }: { lang: Lang }) {
 
   return (
     <Room tone="room-work" lang={lang} current="work">
-      {/* ── masthead ─────────────────────────────────────────── */}
-      <section className="px-5 pb-12 pt-28 sm:px-8 sm:pt-36">
-        <div className="mx-auto max-w-[1680px]">
-          <nav aria-label="Breadcrumb" className="mono-label mb-6 flex flex-wrap gap-2 opacity-40">
-            <Link to="/work" className="underline-draw">
-              {lang === "fa" ? "مجموعه‌ها" : "Collections"}
-            </Link>
-            <span aria-hidden>/</span>
-            <span className="opacity-80">{tx(collection.name, lang)}</span>
-          </nav>
+      {/* ── masthead ─────────────────────────────────────────────
+          Each direction opens with its number, its name at display
+          size, and one italic line that is the direction's own voice.
+          The statement sits in a narrow measure beside it, so the two
+          are read as caption and plate rather than heading and body. */}
+      <header className="page-shell pt-28 sm:pt-36">
+        <nav aria-label="Breadcrumb" className="plate flex flex-wrap gap-2">
+          <Link to="/work" className="underline-draw hover:text-[var(--color-bone)]">
+            {lang === "fa" ? "مجموعه‌ها" : "Collections"}
+          </Link>
+          <span aria-hidden className="opacity-40">
+            /
+          </span>
+          <span className="text-[var(--color-bone-dim)]">{tx(collection.name, lang)}</span>
+        </nav>
 
-          <div
-            className="flex flex-wrap items-baseline justify-between gap-3 border-b pb-4"
-            style={{ borderColor: "var(--room-line)" }}
-          >
-            <p className="eyebrow opacity-60">Articksaw</p>
-            <p className="mono-label opacity-45">
-              {artworks.length} {lang === "fa" ? "اثر" : "works"}
+        <div className="mt-10 grid grid-cols-12 items-end gap-x-6 gap-y-8">
+          <div className="col-span-12 lg:col-span-8">
+            <p className="plate mb-4">
+              Articksaw · {String(collection.order).padStart(2, "0")}
             </p>
+            <h1
+              className={cn(
+                "display-xl text-balance",
+                lang === "fa" && "text-[clamp(2rem,7vw,4.6rem)] leading-[1.14]"
+              )}
+            >
+              {tx(collection.name, lang)}
+            </h1>
           </div>
 
-          <h1
+          <p
             className={cn(
-              "display-xl mt-8 max-w-[14ch] text-balance",
-              lang === "fa" && "text-[clamp(2rem,7vw,4.6rem)] leading-[1.14]"
+              "voice col-span-12 text-[clamp(1.15rem,2.2vw,1.6rem)] text-[var(--color-bone-dim)] lg:col-span-3 lg:col-start-10 lg:pb-2",
+              lang === "fa" && "leading-[1.7]"
             )}
           >
-            {tx(collection.name, lang)}
-          </h1>
+            {tx(collection.character, lang)}
+          </p>
+        </div>
 
-          <div className="mt-6 grid gap-8 sm:grid-cols-12">
-            <p className="text-pretty text-sm leading-relaxed opacity-75 sm:col-span-6">
-              {tx(collection.statement, lang)}
+        <div className="blade mt-12 grid grid-cols-12 gap-x-6 gap-y-6 pt-6">
+          <p className="prose-body col-span-12 sm:col-span-7 lg:col-span-5">
+            {tx(collection.statement, lang)}
+          </p>
+
+          <div className="col-span-12 flex flex-col justify-end gap-2 sm:col-span-4 sm:col-start-9">
+            <p className="plate">
+              {artworks.length > 0
+                ? `${String(artworks.length).padStart(2, "0")} ${lang === "fa" ? "اثر" : "works"}`
+                : lang === "fa"
+                  ? "در آماده‌سازی"
+                  : "in preparation"}
             </p>
-            <p className="font-display text-lg leading-snug text-balance opacity-90 sm:col-span-5 sm:text-2xl">
-              “{tx(collection.character, lang)}”
+            {/* pillars: principles set as a keyword run, never as filters */}
+            <p className="plate leading-relaxed">
+              {pillars.map((p) => tx(p.name, lang)).join("  ·  ")}
             </p>
           </div>
-
-          {/* pillars are principles, not navigation */}
-          <ul className="mt-10 flex flex-wrap gap-x-6 gap-y-2 border-t pt-4" style={{ borderColor: "var(--room-line)" }}>
-            {pillars.map((p) => (
-              <li key={p.id} className="mono-label opacity-45">
-                {tx(p.name, lang)}
-              </li>
-            ))}
-          </ul>
         </div>
-      </section>
+      </header>
 
       {/* ── opening film (only for directions that have one) ───── */}
       {film && (
-        <section className="relative">
+        <section className="mt-16 sm:mt-24">
           <ScrollFilmScene
             film={film}
             distance={2.2}
@@ -107,82 +119,95 @@ export default function CollectionPage({ lang }: { lang: Lang }) {
         </section>
       )}
 
-      {/* ── works ────────────────────────────────────────────── */}
-      <section className="px-5 pb-20 sm:px-8">
-        <div className="mx-auto max-w-[1680px]">
-          {artworks.length === 0 ? (
-            <div
-              className="flex min-h-[32vh] flex-col items-start justify-center border-t pt-10"
-              style={{ borderColor: "var(--room-line)" }}
-            >
-              <p className="font-display text-xl leading-snug opacity-80 sm:text-2xl">
-                {lang === "fa"
-                  ? "این مجموعه در حال آماده‌سازی است."
-                  : "This collection is still being prepared."}
-              </p>
-              <p className="mt-2 max-w-md text-xs leading-relaxed opacity-50">
-                {lang === "fa"
-                  ? "آثاری که هنوز منتشر نشده‌اند اینجا نمایش داده نمی‌شوند. به‌زودی."
-                  : "Works are shown only once they are finished and published. Nothing is previewed early."}
-              </p>
-            </div>
-          ) : (
-            <ul className="grid gap-x-6 gap-y-14 sm:grid-cols-2">
-              {artworks.map((a, i) => (
+      {/* ── works ─────────────────────────────────────────────────
+          Deliberately not a uniform grid: the first work is given the
+          width of the page, and later works alternate between a tall
+          plate and a wide one, so the sequence reads as a hanging
+          rather than a product listing. */}
+      <section className="page-shell py-20 sm:py-28">
+        {artworks.length === 0 ? (
+          <div className="hair-t flex min-h-[30vh] max-w-2xl flex-col justify-center gap-3 pt-10">
+            <p className="display-sm text-[var(--color-bone)]">
+              {lang === "fa"
+                ? "این مجموعه در حال آماده‌سازی است."
+                : "This collection is still being prepared."}
+            </p>
+            <p className="prose-body">
+              {lang === "fa"
+                ? "آثاری که هنوز منتشر نشده‌اند اینجا نمایش داده نمی‌شوند. به‌زودی."
+                : "Works appear only once they are finished and published. Nothing is previewed early."}
+            </p>
+          </div>
+        ) : (
+          <ul className="grid grid-cols-12 gap-x-6 gap-y-16 sm:gap-y-24">
+            {artworks.map((a, i) => {
+              const lead = i === 0;
+              const tall = i % 3 === 2;
+              return (
                 <motion.li
                   key={a.id}
-                  initial={{ opacity: 0, y: 28 }}
+                  initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-8%" }}
-                  transition={{ duration: 0.8, delay: (i % 2) * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                  className={cn(i % 3 === 0 && "sm:col-span-2")}
+                  viewport={{ once: true, margin: "-10%" }}
+                  transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+                  className={cn(
+                    "col-span-12",
+                    lead ? "lg:col-span-12" : tall ? "sm:col-span-5" : "sm:col-span-7",
+                    !lead && tall && "sm:col-start-2",
+                    !lead && !tall && "sm:col-start-6"
+                  )}
                 >
                   <Link to={`/collections/${collection.slug}/${a.slug}`} className="group block">
-                    <div className={cn("overflow-hidden", i % 3 === 0 ? "aspect-[16/10]" : "aspect-[4/5]")}>
+                    <div className={cn("artwork-frame", lead ? "aspect-[16/9]" : "aspect-[4/5]")}>
                       <Art
                         src={a.image}
                         alt={tx(a.alt, lang)}
                         priority={i === 0}
-                        className="ken-burns"
+                        className="ken-burns h-full w-full object-cover"
                       />
                     </div>
-                    <div
-                      className="mt-3 flex items-baseline justify-between gap-3 border-b pb-2"
-                      style={{ borderColor: "var(--room-line)" }}
-                    >
-                      <h2 className="font-display text-xl leading-tight sm:text-2xl">
+                    <div className="mt-4 flex items-baseline justify-between gap-4">
+                      <h2
+                        className={cn(
+                          "font-display leading-[1.05] tracking-[-0.02em]",
+                          lead ? "text-[clamp(1.5rem,3vw,2.4rem)]" : "text-[clamp(1.15rem,2vw,1.6rem)]"
+                        )}
+                      >
                         {tx(a.title, lang)}
                       </h2>
-                      <span className="mono-label shrink-0 opacity-40">{a.year}</span>
+                      <span className="plate shrink-0">{a.year}</span>
                     </div>
-                    <p className="mt-2 text-xs leading-relaxed opacity-55">{tx(a.caption, lang)}</p>
+                    <p className="mt-2 max-w-[46ch] text-[0.8125rem] leading-relaxed text-[var(--color-chalk)]">
+                      {tx(a.caption, lang)}
+                    </p>
                   </Link>
                 </motion.li>
-              ))}
-            </ul>
-          )}
-        </div>
+              );
+            })}
+          </ul>
+        )}
       </section>
 
-      {/* ── other directions ─────────────────────────────────── */}
-      <section className="border-t px-5 py-14 sm:px-8" style={{ borderColor: "var(--room-line)" }}>
-        <div className="mx-auto max-w-[1680px]">
-          <p className="mono-label mb-6 opacity-35">
-            {lang === "fa" ? "جهت‌های دیگر" : "Other directions"}
-          </p>
-          <ul className="grid gap-x-8 sm:grid-cols-2 lg:grid-cols-3">
-            {siblings.map((c) => (
-              <li key={c.id} className="border-b py-3" style={{ borderColor: "var(--room-line)" }}>
-                <Link to={`/collections/${c.slug}`} className="group flex items-baseline justify-between gap-3">
-                  <span className="text-sm opacity-70 transition-opacity group-hover:opacity-100">
-                    {tx(c.name, lang)}
-                  </span>
-                  <span className="mono-label opacity-25">{String(c.order).padStart(2, "0")}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+      {/* ── other directions ───────────────────────────────────── */}
+      <section className="page-shell pb-24">
+        <p className="eyebrow pb-3">{lang === "fa" ? "جهت‌های دیگر" : "Other directions"}</p>
+        <ul className="hair-t">
+          {siblings.map((c) => (
+            <li key={c.id}>
+              <Link
+                to={`/collections/${c.slug}`}
+                className="group index-row"
+                style={{ borderColor: "var(--hair)" }}
+              >
+                <span className="plate">{String(c.order).padStart(2, "0")}</span>
+                <span className="lure font-display text-[clamp(1.2rem,2.4vw,1.9rem)] leading-tight tracking-[-0.02em]">
+                  {tx(c.name, lang)}
+                </span>
+                <span className="plate">{tx(c.tagline, lang)}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
       </section>
     </Room>
   );

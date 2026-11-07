@@ -4,33 +4,107 @@
 @source "./**/*.{ts,tsx}";
 
 /* ══════════════════════════════════════════════════════════════════
-   PICKSAW — image-first portfolio system
-   Every tab carries its own art direction. The shell below is the
-   neutral gallery ink; the per-tab palettes live further down.
+   ARTICKSAW — design system
+   ──────────────────────────────────────────────────────────────────
+   The site is an exhibition. One dark, warm-neutral shell holds
+   everything; the art supplies the colour. Nothing here glows.
+
+   Direction: "Guild Hall" — Bodoni for display (dramatic, high-fashion,
+   didone contrast) over Space Grotesk for interface (precise, quiet,
+   slightly odd in the terminals). Cormorant italic is held back as a
+   single accent voice, used only for the one line on a page that should
+   be read as handwriting.
    ══════════════════════════════════════════════════════════════════ */
 
 @theme {
-  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-display: "Instrument Serif", "Times New Roman", ui-serif, Georgia, serif;
+  /* ── typefaces ────────────────────────────────────────────────── */
+  --font-sans: "Space Grotesk Variable", "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Bodoni Moda", "Bodoni Moda Variable", Didot, "Times New Roman", ui-serif, serif;
+  --font-accent: "Cormorant Garamond Variable", "Cormorant Garamond", Didot, ui-serif, serif;
   --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
   --font-fa: "Vazirmatn Variable", "Vazirmatn", ui-sans-serif, system-ui, sans-serif;
 
-  --color-ink: #08090b;
-  --color-ink-2: #0e1014;
-  --color-ink-3: #15181d;
-  --color-bone: #f4f1ea;
-  --color-bone-dim: #b9b4a9;
-  --color-chalk: #6f6a62;
-  --color-signal: #d8ff3e;
-  --color-ember: #ff5a2b;
-  --color-ice: #7fdcff;
-  --color-plum: #b78cff;
+  /* ── surface ──────────────────────────────────────────────────── */
+  --color-void: #08080a; /* the page, deepest */
+  --color-ink: #0b0b0e; /* primary background */
+  --color-ink-2: #101116; /* raised surface */
+  --color-ink-3: #16181e; /* graphite */
+  --color-ink-4: #1e2028; /* dark metallic grey, borders on dark */
+  --color-graphite: #2a2d36;
+
+  /* ── text ─────────────────────────────────────────────────────── */
+  --color-bone: #efe9dc; /* warm ivory — primary */
+  --color-bone-dim: #b5afa2; /* secondary */
+  --color-chalk: #7c776c; /* muted / metadata */
+  --color-faint: #4a4741; /* hairline labels, near-silent */
+
+  /* ── accents, used sparingly ─────────────────────────────────── */
+  --color-volt: #3d7dff; /* electric blue — links, focus, active */
+  --color-volt-dim: #1f3f80;
+  --color-rust: #a8353c; /* metallic red — an artwork's own colour */
+  --color-brass: #a08a5e; /* metallic warm — rules, numerals */
+
+  /* ── legacy names, kept so existing components keep compiling ──── */
+  --color-signal: #3d7dff;
+  --color-ember: #a8353c;
+  --color-ice: #9aa4b8;
+  --color-plum: #6c5b8a;
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   TOKENS — the raw material every component draws from
+   ══════════════════════════════════════════════════════════════════ */
 :root {
-  --shell-bg: #08090b;
-  --shell-fg: #f4f1ea;
-  /* driven by the scroll engine, 0..1 over the whole document */
+  /* spacing scale — a 1.5 ratio, named, so layouts stay rhythmic */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+  --space-9: 6.5rem;
+  --space-10: 9rem;
+  --space-11: 13rem;
+
+  /* measures — the width at which a line of type stops being readable */
+  --measure-tight: 22ch;
+  --measure: 34ch;
+  --measure-wide: 46ch;
+  --measure-prose: 64ch;
+
+  /* the gallery gutter, fluid: 20px on a phone, 64px on a wide screen */
+  --gutter: clamp(1.25rem, 4.2vw, 4rem);
+  --page-max: 1720px;
+
+  /* hairlines. On dark, a rule is light at 8–14%; never a solid white */
+  --hair: rgba(239, 233, 220, 0.1);
+  --hair-strong: rgba(239, 233, 220, 0.2);
+  --hair-accent: rgba(61, 125, 255, 0.4);
+
+  /* motion — one easing family, so nothing feels borrowed */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-blade: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 220ms;
+  --dur-mid: 520ms;
+  --dur-slow: 900ms;
+  --dur-editorial: 1400ms;
+
+  /* elevation — shadows on near-black are *occlusion*, not glow */
+  --lift-1: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --lift-2: 0 18px 48px -24px rgba(0, 0, 0, 0.9);
+  --lift-3: 0 44px 120px -40px rgba(0, 0, 0, 0.95);
+
+  /* optical compensation — Cormorant's x-height is 0.386, so any text
+     set in it needs help. Bodoni needs less. These are deliberate. */
+  --optical-serif-tight: -0.035em;
+  --optical-serif-normal: -0.02em;
+  --optical-sans: -0.011em;
+
+  --shell-bg: #0b0b0e;
+  --shell-fg: #efe9dc;
   --page-progress: 0;
 }
 
@@ -53,31 +127,31 @@
 
   body {
     font-family: var(--font-sans);
+    font-weight: 400;
     background-color: var(--shell-bg);
     color: var(--shell-fg);
+    letter-spacing: var(--optical-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
-    font-feature-settings: "ss01" 1;
+    font-feature-settings: "ss01" 1, "cv01" 1;
+    text-rendering: optimizeLegibility;
   }
 
-  /* Persian switches to the geometric companion — and never fakes italics */
+  /* Persian never uses the Latin accent face, and never fakes italics */
   [dir="rtl"] body,
   [dir="rtl"] {
     font-family: var(--font-fa);
+    letter-spacing: 0;
   }
-  [dir="rtl"] .font-display {
+  [dir="rtl"] .font-display,
+  [dir="rtl"] .font-accent {
     font-family: var(--font-fa);
     font-style: normal;
     font-weight: 700;
     letter-spacing: 0;
   }
-  /* letterspacing reads as broken word-spacing in Persian — reset it */
   [dir="rtl"] * {
-    letter-spacing: 0;
-  }
-  [dir="rtl"] .font-mono,
-  [dir="rtl"] .mono-label {
     letter-spacing: 0;
   }
 
@@ -101,27 +175,26 @@
   }
 
   ::selection {
-    background: var(--color-signal);
-    color: #000;
+    background: var(--color-volt);
+    color: #fff;
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-signal);
+    outline: 1.5px solid var(--color-volt);
     outline-offset: 3px;
   }
 
   ::-webkit-scrollbar {
-    width: 8px;
+    width: 9px;
   }
   ::-webkit-scrollbar-track {
-    background: var(--shell-bg);
+    background: var(--color-void);
   }
   ::-webkit-scrollbar-thumb {
-    background: #2a2e36;
-    border-radius: 8px;
+    background: var(--color-graphite);
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #3d434e;
+    background: #3a3e48;
   }
 
   img {
@@ -141,12 +214,21 @@
   }
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   TYPOGRAPHY — a five-step display scale, a four-step interface scale
+   ══════════════════════════════════════════════════════════════════ */
 @layer utilities {
-  /* ── type ──────────────────────────────────────────────────── */
   .font-display {
     font-family: var(--font-display);
     font-weight: 400;
     font-optical-sizing: auto;
+    font-feature-settings: "liga" 1, "dlig" 1;
+  }
+  .font-accent {
+    font-family: var(--font-accent);
+    font-weight: 300;
+    font-style: italic;
+    letter-spacing: -0.01em;
   }
 
   .text-balance {
@@ -156,58 +238,127 @@
     text-wrap: pretty;
   }
 
-  /* editorial display sizing, fluid */
+  /* ── display scale ──────────────────────────────────────────────
+     Bodoni's cap height is 0.75em and its ascenders run to 1.125em, so
+     line-height has to sit *below* 1 to tighten a stack without
+     collisions. These numbers are measured, not stylistic. */
   .display-xl {
     font-family: var(--font-display);
-    font-size: clamp(3.2rem, 12vw, 11.5rem);
-    line-height: 0.86;
-    letter-spacing: -0.035em;
+    font-weight: 400;
+    font-size: clamp(3.4rem, 13.5vw, 13rem);
+    line-height: 0.82;
+    letter-spacing: var(--optical-serif-tight);
   }
   .display-lg {
     font-family: var(--font-display);
-    font-size: clamp(2.6rem, 8.4vw, 7rem);
-    line-height: 0.92;
+    font-weight: 400;
+    font-size: clamp(2.7rem, 8.6vw, 8rem);
+    line-height: 0.88;
     letter-spacing: -0.03em;
   }
   .display-md {
     font-family: var(--font-display);
-    font-size: clamp(2rem, 5vw, 3.75rem);
-    line-height: 1;
-    letter-spacing: -0.02em;
+    font-weight: 400;
+    font-size: clamp(1.9rem, 4.6vw, 3.9rem);
+    line-height: 0.98;
+    letter-spacing: -0.025em;
+  }
+  .display-sm {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.4rem, 2.6vw, 2.1rem);
+    line-height: 1.06;
+    letter-spacing: -0.015em;
+  }
+
+  /* the pull-quote voice: italic Cormorant, one per page at most */
+  .voice {
+    font-family: var(--font-accent);
+    font-weight: 300;
+    font-style: italic;
+    letter-spacing: -0.012em;
+    line-height: 1.24;
   }
 
   [dir="rtl"] .display-xl,
   [dir="rtl"] .display-lg,
-  [dir="rtl"] .display-md {
+  [dir="rtl"] .display-md,
+  [dir="rtl"] .display-sm {
     font-family: var(--font-fa);
     font-weight: 700;
-    line-height: 1.18;
+    line-height: 1.16;
     letter-spacing: 0;
   }
+  [dir="rtl"] .voice {
+    font-family: var(--font-fa);
+    font-style: normal;
+    font-weight: 500;
+    line-height: 1.6;
+  }
 
+  /* ── interface scale ────────────────────────────────────────── */
   .eyebrow {
     font-family: var(--font-mono);
     font-size: 0.6875rem;
-    letter-spacing: 0.28em;
+    letter-spacing: 0.3em;
     text-transform: uppercase;
-    font-weight: 500;
+    font-weight: 400;
+    color: var(--color-chalk);
   }
-  [dir="rtl"] .eyebrow {
-    font-family: var(--font-fa);
-    letter-spacing: 0;
-    font-size: 0.75rem;
-  }
-
   .mono-label {
     font-family: var(--font-mono);
     font-size: 0.6875rem;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
+    font-weight: 400;
   }
-  [dir="rtl"] .mono-label {
+  /* the smallest voice: catalogue numbers, plate marks */
+  .plate {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-faint);
+  }
+  .lede {
+    font-size: clamp(1rem, 1.35vw, 1.1875rem);
+    line-height: 1.62;
+    letter-spacing: -0.005em;
+    color: var(--color-bone-dim);
+    max-width: var(--measure-wide);
+  }
+  .prose-body {
+    font-size: 0.9375rem;
+    line-height: 1.75;
+    color: var(--color-bone-dim);
+    max-width: var(--measure-prose);
+  }
+  .numeral {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+
+  [dir="rtl"] .eyebrow,
+  [dir="rtl"] .mono-label,
+  [dir="rtl"] .plate {
     font-family: var(--font-fa);
     letter-spacing: 0;
     text-transform: none;
+    font-size: 0.75rem;
+  }
+
+  /* ── layout ───────────────────────────────────────────────────── */
+  .page-shell {
+    max-width: var(--page-max);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+  .measure {
+    max-width: var(--measure);
+  }
+  .measure-wide {
+    max-width: var(--measure-wide);
   }
 
   /* ── safe areas ───────────────────────────────────────────── */
@@ -221,11 +372,17 @@
   /* ── hairlines ────────────────────────────────────────────── */
   .rule {
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(244, 241, 234, 0.18) 12%, rgba(244, 241, 234, 0.18) 88%, transparent);
+    background: linear-gradient(90deg, var(--hair), var(--hair-strong) 12%, var(--hair-strong) 88%, var(--hair));
   }
   .rule-dark {
     height: 1px;
-    background: rgba(0, 0, 0, 0.14);
+    background: var(--hair);
+  }
+  .hair-t {
+    border-top: 1px solid var(--hair);
+  }
+  .hair-b {
+    border-bottom: 1px solid var(--hair);
   }
 
   /* ── media frames ─────────────────────────────────────────── */
@@ -243,11 +400,11 @@
 
   /* slow cinematic push-in on hover — GPU only */
   .ken-burns {
-    transition: transform 1.4s cubic-bezier(0.22, 1, 0.36, 1), filter 0.8s ease;
+    transition: transform var(--dur-editorial) var(--ease-out), filter var(--dur-slow) ease;
     will-change: transform;
   }
   .group:hover .ken-burns {
-    transform: scale(1.045);
+    transform: scale(1.04);
   }
 
   .grain-fine::after {
@@ -255,7 +412,7 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    opacity: 0.14;
+    opacity: 0.12;
     mix-blend-mode: overlay;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
   }
@@ -263,7 +420,7 @@
   /* global paper grain — one fixed layer, near-free */
   .grain-layer {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
-    opacity: 0.028;
+    opacity: 0.03;
     mix-blend-mode: screen;
   }
 
@@ -275,23 +432,21 @@
   .link-slide::after {
     content: "";
     position: absolute;
-    left: 0;
-    right: 0;
+    inset-inline: 0;
     bottom: -3px;
     height: 1px;
     background: currentColor;
     transform: scaleX(0);
     transform-origin: right;
-    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform var(--dur-mid) var(--ease-out);
   }
   .link-slide:hover::after {
     transform: scaleX(1);
     transform-origin: left;
   }
 
-  /* the quiet arrow that steps forward on hover */
   .arrow-step {
-    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform var(--dur-mid) var(--ease-out);
   }
   .group:hover .arrow-step {
     transform: translateX(5px);
@@ -300,11 +455,11 @@
     transform: translateX(-5px);
   }
 
-  /* ── scroll reveal (IntersectionObserver driven) ───────────── */
+  /* ── reveal (IntersectionObserver driven) ─────────────────── */
   .reveal {
     opacity: 0;
-    transform: translateY(26px);
-    transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1), transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+    transform: translateY(24px);
+    transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out);
   }
   .reveal.is-in {
     opacity: 1;
@@ -313,7 +468,7 @@
 
   .clip-reveal {
     clip-path: inset(0 0 100% 0);
-    transition: clip-path 1.15s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: clip-path var(--dur-editorial) var(--ease-blade);
   }
   .clip-reveal.is-in {
     clip-path: inset(0 0 0 0);
@@ -324,7 +479,7 @@
     background-repeat: no-repeat;
     background-size: 0% 1px;
     background-position: 0 100%;
-    transition: background-size 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: background-size var(--dur-mid) var(--ease-out);
   }
   .underline-draw:hover {
     background-size: 100% 1px;
@@ -344,76 +499,175 @@
   .drag-cursor:active {
     cursor: grabbing;
   }
+
+  /* ══════════════════════════════════════════════════════════════
+     COMPONENTS — small, named, composable
+     ══════════════════════════════════════════════════════════════ */
+
+  /* The blade: a hairline that enters from one edge and stops short.
+     Used to open sections the way a catalogue breaks a page. */
+  .blade {
+    position: relative;
+    padding-top: var(--space-5);
+  }
+  .blade::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0;
+    top: 0;
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(90deg, var(--hair-strong), var(--hair) 42%, transparent 78%);
+  }
+  [dir="rtl"] .blade::before {
+    background: linear-gradient(270deg, var(--hair-strong), var(--hair) 42%, transparent 78%);
+  }
+
+  /* A plate: the number + label sitting above a section, as in a print
+     catalogue. Deliberately small, deliberately quiet. */
+  .plate-mark {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+  }
+
+  /* Framed artwork: the image sits on its own, with a thin border that
+     only appears on hover — the interface arriving and withdrawing. */
+  .artwork-frame {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-ink-2);
+  }
+  .artwork-frame::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 1px solid transparent;
+    transition: border-color var(--dur-mid) var(--ease-out);
+    pointer-events: none;
+  }
+  .group:hover .artwork-frame::after {
+    border-color: var(--hair-strong);
+  }
+
+  /* The "quiet" button: an underline and a space, not a pill. */
+  .btn-quiet {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-bone-dim);
+    padding-block: var(--space-2);
+    border-bottom: 1px solid var(--hair);
+    transition: color var(--dur-fast) ease, border-color var(--dur-mid) var(--ease-out);
+  }
+  .btn-quiet:hover {
+    color: var(--color-bone);
+    border-color: var(--hair-strong);
+  }
+  [dir="rtl"] .btn-quiet {
+    font-family: var(--font-fa);
+    letter-spacing: 0;
+    text-transform: none;
+    font-size: 0.8125rem;
+  }
+
+  /* numeral gutters, as in a printed index */
+  .index-row {
+    display: grid;
+    grid-template-columns: 3.5rem 1fr auto;
+    align-items: baseline;
+    gap: var(--space-4);
+    padding-block: var(--space-5);
+    border-bottom: 1px solid var(--hair);
+    transition: background-color var(--dur-mid) var(--ease-out);
+  }
+  .index-row:hover {
+    background-color: rgba(239, 233, 220, 0.022);
+  }
+  @media (max-width: 640px) {
+    .index-row {
+      grid-template-columns: 2.25rem 1fr auto;
+      gap: var(--space-3);
+    }
+  }
+
+  /* a hover that only moves the letters — no borders, no fills */
+  .lure {
+    display: inline-block;
+    transition: transform var(--dur-mid) var(--ease-out), opacity var(--dur-mid) ease;
+  }
+  .group:hover .lure {
+    transform: translateX(0.35rem);
+  }
+  [dir="rtl"] .group:hover .lure {
+    transform: translateX(-0.35rem);
+  }
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   TAB PALETTES — each room of the gallery has its own light
+   ROOM PALETTES
+   The old architecture gave every tab its own background. That is what
+   made the site read as five separate designs. The exhibition is one
+   dark room now: each tab varies only in *temperature* and accent, so
+   the art is always the brightest thing on screen.
    ══════════════════════════════════════════════════════════════════ */
 
-/* 01 · WORK — editorial paper & ink */
-.room-work {
-  --room-bg: #f2efe9;
-  --room-fg: #14130f;
-  --room-dim: #6b6659;
-  --room-line: rgba(20, 19, 15, 0.16);
-  --room-accent: #14130f;
-  background: var(--room-bg);
-  color: var(--room-fg);
-}
-
-/* 02 · WORLDS — deep space, ice highlight */
-.room-worlds {
-  --room-bg: #0a0d12;
-  --room-fg: #e7edf3;
-  --room-dim: #7d8996;
-  --room-line: rgba(231, 237, 243, 0.14);
-  --room-accent: #7fdcff;
-  background: var(--room-bg);
-  color: var(--room-fg);
-}
-
-/* 03 · AI ART — gallery white, plum accent */
-.room-ai {
-  --room-bg: #fbfaf7;
-  --room-fg: #16151a;
-  --room-dim: #77747f;
-  --room-line: rgba(22, 21, 26, 0.14);
-  --room-accent: #6d3bd4;
-  background: var(--room-bg);
-  color: var(--room-fg);
-}
-
-/* 04 · SOUND — nightclub black, ember */
-.room-sound {
-  --room-bg: #070607;
-  --room-fg: #f2ede6;
-  --room-dim: #8a8078;
-  --room-line: rgba(255, 255, 255, 0.12);
-  --room-accent: #ff5a2b;
-  background: var(--room-bg);
-  color: var(--room-fg);
-}
-
-/* 05 · ABOUT — dark editorial spread */
-.room-about {
-  --room-bg: #101113;
-  --room-fg: #f4f1ea;
-  --room-dim: #8e8b84;
-  --room-line: rgba(244, 241, 234, 0.15);
-  --room-accent: #d8ff3e;
-  background: var(--room-bg);
-  color: var(--room-fg);
-}
-
-/* 06 · CONTACT — bone paper, reverse contrast */
+.room-work,
+.room-worlds,
+.room-ai,
+.room-sound,
+.room-about,
 .room-contact {
-  --room-bg: #e8e4db;
-  --room-fg: #121110;
-  --room-dim: #6a655c;
-  --room-line: rgba(18, 17, 16, 0.2);
-  --room-accent: #121110;
+  --room-bg: var(--color-ink);
+  --room-fg: var(--color-bone);
+  --room-dim: var(--color-chalk);
+  --room-line: var(--hair);
+  --room-accent: var(--color-volt);
   background: var(--room-bg);
   color: var(--room-fg);
+}
+
+/* ARTWORK — the neutral gallery: warm, almost colourless */
+.room-work {
+  --room-bg: #0c0c0f;
+  --room-accent: var(--color-brass);
+}
+
+/* WORLDS — the coldest room, ice and distance */
+.room-worlds {
+  --room-bg: #090b10;
+  --room-accent: #7d9ac4;
+}
+
+/* AI — warm paper swapped for a warmer dark; violet in the shadows */
+.room-ai {
+  --room-bg: #0d0b10;
+  --room-accent: #8b7bd8;
+}
+
+/* SOUND — blacker than the rest, ember accent */
+.room-sound {
+  --room-bg: #07070a;
+  --room-accent: var(--color-rust);
+}
+
+/* ABOUT — the editorial spread, slightly raised */
+.room-about {
+  --room-bg: #0e0f12;
+  --room-accent: var(--color-brass);
+}
+
+/* CONTACT — the one room that inverts, like the back cover of a book */
+.room-contact {
+  --room-bg: #e9e4d9;
+  --room-fg: #12110f;
+  --room-dim: #6a655c;
+  --room-line: rgba(18, 17, 15, 0.16);
+  --room-accent: #12110f;
 }
 
 /* shared room bits */

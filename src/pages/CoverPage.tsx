@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "motion/react";
 import { SITE_TEXTS, type Lang } from "../config/siteTexts";
 import StormLayer from "../components/storm/StormLayer";
 import CinematicIntro from "../animation/CinematicIntro";
+import Wordmark from "../components/brand/Wordmark";
 import ScrollFilmScene from "../animation/ScrollFilmScene";
 import CoverHeadline from "../components/cover/CoverHeadline";
 import { filmFor } from "../config/films.generated";
@@ -69,94 +69,113 @@ export default function CoverPage({ lang }: { lang: Lang }) {
         </section>
       )}
 
-      {/* ── statement ──────────────────────────────────────────── */}
-      <section className="relative border-t border-bone/10 px-5 py-20 sm:px-8 sm:py-28">
-        <div className="mx-auto grid max-w-[1680px] gap-10 lg:grid-cols-12">
-          <p className="mono-label text-bone/35 lg:col-span-2">(01)</p>
-          <div className="lg:col-span-8">
-            <motion.p
-              className="font-display text-[1.5rem] leading-[1.35] tracking-tight text-balance text-bone/90 sm:text-[2.15rem]"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-12%" }}
-              transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+      {/* ── statement: a single column, set like the first page of a
+             catalogue. No cards, no grid of tiles — one idea, one
+             measure, and a great deal of air around it. ───────────── */}
+      <section className="page-shell relative py-24 sm:py-32">
+        <div className="grid grid-cols-12 gap-x-6 gap-y-12">
+          <p className="plate col-span-12 sm:col-span-1">(01)</p>
+
+          <div className="col-span-12 sm:col-span-7">
+            <p
+              className={cn(
+                "font-display text-[clamp(1.5rem,3.1vw,2.6rem)] leading-[1.16] tracking-[-0.02em] text-balance",
+                lang === "fa" && "leading-[1.5]"
+              )}
             >
               {t.coverIntro}
-            </motion.p>
+            </p>
 
-            <div className="mt-10 flex flex-wrap items-center gap-4">
-              <Link
-                to="/work"
-                className="group inline-flex items-center gap-3 border border-bone/25 px-5 py-3 transition-colors hover:border-bone/60"
-              >
-                <span className="mono-label">{t.coverEnter}</span>
-                <span className="arrow-step text-sm">{lang === "fa" ? "←" : "→"}</span>
+            <div className="mt-12 flex flex-wrap items-baseline gap-x-8 gap-y-3">
+              <Link to="/work" className="group btn-quiet">
+                <span>{t.coverEnter}</span>
+                <span className="arrow-step">{lang === "fa" ? "←" : "→"}</span>
               </Link>
-              <Link to="/journal" className="mono-label text-bone/50 underline-draw hover:text-bone">
+              <Link to="/journal" className="mono-label text-[var(--color-chalk)] underline-draw hover:text-[var(--color-bone)]">
                 {t.navJournal}
               </Link>
             </div>
           </div>
+
+          {/* the right column is deliberately almost empty: one mark,
+              one line of provenance. The emptiness is the composition. */}
+          <div className="col-span-12 flex flex-col justify-end gap-3 sm:col-span-3 sm:col-start-10">
+            <Wordmark className="h-[0.5rem] w-fit text-[var(--color-bone)] opacity-70" />
+            <p className="plate">
+              {t.ownerName}
+              <br />
+              {t.city} · 2026
+            </p>
+          </div>
         </div>
       </section>
 
-      {/* ── the six directions ─────────────────────────────────── */}
-      <section className="relative border-t border-bone/10 px-5 pb-24 pt-16 sm:px-8">
-        <div className="mx-auto max-w-[1680px]">
-          <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
-            <h2 className="display-md">{lang === "fa" ? "مجموعه‌ها" : "Collections"}</h2>
-            <p className="hidden max-w-xs text-right text-xs leading-relaxed text-bone/45 sm:block">
-              {totalPublished()}{" "}
-              {lang === "fa" ? "اثر منتشرشده" : "published works"} ·{" "}
-              {collectionsSorted().length} {lang === "fa" ? "جهت" : "directions"}
-            </p>
-          </div>
+      {/* ── the six directions: an index, not a menu ─────────────── */}
+      <section className="page-shell relative pb-28">
+        <div className="flex flex-wrap items-baseline justify-between gap-4 pb-3">
+          <h2 className="eyebrow">Articksaw — {lang === "fa" ? "مجموعه‌ها" : "collections"}</h2>
+          <p className="plate">
+            {totalPublished()} {lang === "fa" ? "منتشرشده" : "published"}
+            <span className="mx-2 opacity-40">/</span>
+            {collectionsSorted().length} {lang === "fa" ? "جهت" : "directions"}
+          </p>
+        </div>
 
-          <ul className="border-t border-bone/12">
-            {collectionsSorted().map((c, i) => {
-              const count = collectionCount(c.id);
-              return (
-                <motion.li
-                  key={c.id}
-                  className="group border-b border-bone/12"
-                  initial={{ opacity: 0, y: 18 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-8%" }}
-                  transition={{ duration: 0.7, delay: i * 0.04, ease: [0.22, 1, 0.36, 1] }}
+        <ul className="hair-t">
+          {collectionsSorted().map((c, i) => {
+            const count = collectionCount(c.id);
+            return (
+              <li key={c.id}>
+                <Link
+                  to={`/collections/${c.slug}`}
+                  className="group index-row"
+                  style={{ borderColor: "var(--hair)" }}
                 >
-                  <Link to={`/collections/${c.slug}`} className="flex flex-wrap items-baseline gap-x-4 gap-y-2 py-5 sm:gap-8 sm:py-6">
-                    <span className="mono-label w-7 shrink-0 text-bone/30">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
+                  <span className="plate">{String(i + 1).padStart(2, "0")}</span>
+
+                  <span className="flex flex-wrap items-baseline gap-x-5 gap-y-1">
                     <span
                       className={cn(
-                        "font-display text-[1.7rem] leading-none tracking-tight transition-all duration-500 group-hover:translate-x-1.5 sm:text-[2.9rem]",
-                        lang === "fa" && "text-[1.4rem] sm:text-[2.2rem]"
+                        "lure font-display text-[clamp(1.5rem,3.4vw,2.6rem)] leading-[1.02] tracking-[-0.03em]",
+                        lang === "fa" && "text-[clamp(1.2rem,2.8vw,1.9rem)] leading-[1.3]"
                       )}
                     >
                       {tx(c.name, lang)}
                     </span>
-                    <span className="mono-label hidden text-bone/30 sm:ml-auto sm:block">
-                      {count > 0 ? `${count} ${lang === "fa" ? "اثر" : "works"}` : lang === "fa" ? "به‌زودی" : "soon"}
+                    <span className="hidden max-w-[38ch] text-[0.8125rem] leading-relaxed text-[var(--color-chalk)] md:block">
+                      {tx(c.tagline, lang)}
                     </span>
-                    <span className="ml-auto text-bone/30 transition-transform duration-500 group-hover:translate-x-1 sm:ml-6">
+                  </span>
+
+                  <span className="flex items-baseline gap-4">
+                    <span className="plate">
+                      {count > 0
+                        ? `${String(count).padStart(2, "0")} ${lang === "fa" ? "اثر" : "works"}`
+                        : lang === "fa"
+                          ? "در آماده‌سازی"
+                          : "in preparation"}
+                    </span>
+                    <span
+                      aria-hidden
+                      className="text-[0.7rem] opacity-30 transition-all duration-500 group-hover:translate-x-1 group-hover:opacity-70"
+                    >
                       {lang === "fa" ? "←" : "→"}
                     </span>
-                  </Link>
-                </motion.li>
-              );
-            })}
-          </ul>
-        </div>
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
       </section>
 
       {/* ── colophon ───────────────────────────────────────────── */}
-      <section className="border-t border-bone/10 px-5 py-8 sm:px-8">
-        <div className="mx-auto flex max-w-[1680px] flex-col gap-2 text-[11px] text-bone/35 sm:flex-row sm:items-center sm:justify-between">
-          <p className="mono-label">{t.footerCredit.replace("{year}", String(new Date().getFullYear()))}</p>
-          <p className="mono-label">{t.footerTagline}</p>
+      <footer className="page-shell pb-10">
+        <div className="hair-t flex flex-col gap-2 pt-4 sm:flex-row sm:items-baseline sm:justify-between">
+          <p className="plate">{t.footerCredit.replace("{year}", String(new Date().getFullYear()))}</p>
+          <p className="voice text-sm text-[var(--color-chalk)]">{t.footerTagline}</p>
         </div>
-      </section>
+      </footer>
     </div>
   );
 }

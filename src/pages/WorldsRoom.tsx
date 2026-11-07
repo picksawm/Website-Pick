@@ -183,7 +183,7 @@ function WorldPlate({
           {world.stack.map((s) => (
             <span
               key={s}
-              className="mono-label rounded-full border px-2.5 py-1 text-[9px]"
+              className="plate"
               style={{ borderColor: "var(--room-line)", color: "var(--room-accent)", opacity: 0.75 }}
             >
               {s}

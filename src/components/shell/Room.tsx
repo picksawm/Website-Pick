@@ -10,13 +10,17 @@ import { cn } from "../../utils/cn";
 type RoomClass = "room-work" | "room-worlds" | "room-ai" | "room-sound" | "room-about" | "room-contact";
 
 /** Which rooms are lit by the storm, and how hard the weather hits. */
+/* One exhibition, one atmosphere. The rooms differ in temperature and
+   accent, not in whether the lights are on: a gallery does not repaint
+   itself between rooms, it hangs different work. Only CONTACT inverts,
+   the way the back cover of a catalogue does. */
 const WEATHER: Record<RoomClass, { mode: "dark" | "light"; intensity: number; lightning?: boolean }> = {
-  "room-work": { mode: "light", intensity: 0.55 },
-  "room-worlds": { mode: "dark", intensity: 1.15, lightning: true },
-  "room-ai": { mode: "light", intensity: 0.35 },
-  "room-sound": { mode: "dark", intensity: 0.7 },
-  "room-about": { mode: "dark", intensity: 0.5 },
-  "room-contact": { mode: "light", intensity: 0.4 },
+  "room-work": { mode: "dark", intensity: 0.42 },
+  "room-worlds": { mode: "dark", intensity: 1.1, lightning: true },
+  "room-ai": { mode: "dark", intensity: 0.5 },
+  "room-sound": { mode: "dark", intensity: 0.6 },
+  "room-about": { mode: "dark", intensity: 0.4 },
+  "room-contact": { mode: "light", intensity: 0.35 },
 };
 
 interface RoomProps {

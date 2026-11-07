@@ -106,7 +106,7 @@ export default function WorkRoom({ lang }: { lang: Lang }) {
               type="button"
               onClick={() => dragTo(-1)}
               aria-label={t.prevRoom}
-              className="flex h-11 w-11 items-center justify-center rounded-full border transition-colors hover:bg-[color:var(--room-fg)] hover:text-[color:var(--room-bg)]"
+              className="flex h-11 w-8 items-center justify-center border-b transition-colors hover:border-[color:var(--room-fg)]"
               style={{ borderColor: "var(--room-line)" }}
             >
               {lang === "fa" ? "→" : "←"}
@@ -115,7 +115,7 @@ export default function WorkRoom({ lang }: { lang: Lang }) {
               type="button"
               onClick={() => dragTo(1)}
               aria-label={t.nextRoom}
-              className="flex h-11 w-11 items-center justify-center rounded-full border transition-colors hover:bg-[color:var(--room-fg)] hover:text-[color:var(--room-bg)]"
+              className="flex h-11 w-8 items-center justify-center border-b transition-colors hover:border-[color:var(--room-fg)]"
               style={{ borderColor: "var(--room-line)" }}
             >
               {lang === "fa" ? "←" : "→"}
@@ -160,7 +160,7 @@ export default function WorkRoom({ lang }: { lang: Lang }) {
                 {p.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="mono-label rounded-full border px-2 py-0.5 text-[9px] opacity-55"
+                    className="plate"
                     style={{ borderColor: "var(--room-line)" }}
                   >
                     {tag}
@@ -206,7 +206,7 @@ export default function WorkRoom({ lang }: { lang: Lang }) {
                   <p className="mono-label col-span-6 opacity-45 sm:col-span-2">{p.tags[0]}</p>
                   <p className="mono-label col-span-3 text-right opacity-45 sm:col-span-1">{p.year}</p>
                   <div className="col-span-3 flex justify-end sm:col-span-1">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full border text-xs opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ borderColor: "var(--room-line)" }}>
+                    <span className="plate opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                       ↗
                     </span>
                   </div>
@@ -263,7 +263,7 @@ function FilterChip({
       type="button"
       onClick={onClick}
       className={cn(
-        "mono-label rounded-full border px-3 py-1.5 transition-all duration-300",
+        "mono-label border-b px-0.5 py-1 transition-colors duration-300",
         active ? "border-transparent bg-[color:var(--room-fg)] text-[color:var(--room-bg)]" : "opacity-55 hover:opacity-100"
       )}
       style={active ? undefined : { borderColor: "var(--room-line)" }}
