@@ -1,5 +1,5 @@
-import { useEffect, useState, useCallback } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { useEffect, useState, useCallback, useMemo } from "react";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "motion/react";
 import Lenis from "lenis";
 
@@ -38,8 +38,51 @@ function ScrollToTop() {
   return null;
 }
 
-export default function App() {
-  const { lang, toggle } = useLanguage();
+interface AppProps {
+  /** language to boot in — the prerenderer passes the route's language */
+  initialLang?: "en" | "fa";
+  /** true while rendering to static HTML: no effects, no network, no scroll */
+  forPrerender?: boolean;
+}
+
+/**
+ * HashLegacyRedirect — old bookmarks were `/#/worlds`.
+ *
+ * HashRouter never told the server anything, so those URLs still exist in
+ * the wild (and possibly in search results). This quietly forwards them
+ * to the real path and replaces history, so the old link keeps working
+ * while the canonical URL becomes a single, crawlable one.
+ */
+function HashLegacyRedirect() {
+  const navigate = useNavigate();
+  const { pathname, hash } = useLocation();
+
+  useEffect(() => {
+    if (pathname !== "/" || !hash) return;
+    const target = hash.replace(/^#\/?/, "").split("?")[0];
+    if (!target || target.startsWith("fa")) return;
+    const legacy: Record<string, string> = {
+      "": "/",
+      work: "/work",
+      worlds: "/worlds",
+      ai: "/ai",
+      sound: "/sound",
+      about: "/about",
+      contact: "/contact",
+      journal: "/journal",
+      feed: "/journal",
+    };
+    const to = legacy[target];
+    if (!to) return;
+    window.history.replaceState(null, "", to);
+    navigate(to, { replace: true });
+  }, [pathname, hash, navigate]);
+
+  return null;
+}
+
+export default function App({ initialLang, forPrerender = false }: AppProps = {}) {
+  const { lang, toggle } = useLanguage(initialLang);
   const { isAdmin, login, logout } = useAdmin();
   const location = useLocation();
 
@@ -50,6 +93,7 @@ export default function App() {
 
   // ── smooth scroll spine ────────────────────────────────────
   useEffect(() => {
+    if (forPrerender) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const lenis = new Lenis({
       duration: 1.1,
@@ -74,6 +118,7 @@ export default function App() {
 
   // ── posts ──────────────────────────────────────────────────
   useEffect(() => {
+    if (forPrerender) return;
     let cancelled = false;
     (async () => {
       try {
@@ -128,9 +173,49 @@ export default function App() {
     else setShowLogin(true);
   }, [isAdmin]);
 
+  const content = useMemo(
+    () => (
+      <Routes location={location}>
+        <Route path="/" element={<CoverPage lang={lang} />} />
+        <Route path="/work" element={<WorkRoom lang={lang} />} />
+        <Route path="/worlds" element={<WorldsRoom lang={lang} />} />
+        <Route path="/ai" element={<AiRoom lang={lang} />} />
+        <Route path="/sound" element={<SoundRoom lang={lang} />} />
+        <Route path="/about" element={<AboutRoom lang={lang} />} />
+        <Route path="/contact" element={<ContactRoom lang={lang} />} />
+        <Route
+          path="/journal"
+          element={
+            <JournalRoom
+              lang={lang}
+              posts={posts}
+              isAdmin={isAdmin}
+              onPostClick={setSelectedPost}
+              onDeletePost={handleDeletePost}
+              onAdminOpen={handleAdminOpen}
+            />
+          }
+        />
+        <Route path="*" element={<NotFoundPage lang={lang} />} />
+      </Routes>
+    ),
+    [lang, location, posts, isAdmin, handleDeletePost, handleAdminOpen]
+  );
+
+  // ── prerender path: static markup only, identical to the client tree ──
+  if (forPrerender) {
+    return (
+      <div dir={lang === "fa" ? "rtl" : "ltr"} className="relative min-h-screen bg-[#08090b] antialiased">
+        <Nav lang={lang} onToggleLang={toggle} isAdmin={false} onAdminOpen={() => {}} />
+        {content}
+      </div>
+    );
+  }
+
   return (
     <>
       <ScrollToTop />
+      <HashLegacyRedirect />
       <Seo lang={lang} />
 
       <div
@@ -147,37 +232,15 @@ export default function App() {
         <Nav lang={lang} onToggleLang={toggle} isAdmin={isAdmin} onAdminOpen={handleAdminOpen} />
 
         <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={location.pathname}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <Routes location={location}>
-              <Route path="/" element={<CoverPage lang={lang} />} />
-              <Route path="/work" element={<WorkRoom lang={lang} />} />
-              <Route path="/worlds" element={<WorldsRoom lang={lang} />} />
-              <Route path="/ai" element={<AiRoom lang={lang} />} />
-              <Route path="/sound" element={<SoundRoom lang={lang} />} />
-              <Route path="/about" element={<AboutRoom lang={lang} />} />
-              <Route path="/contact" element={<ContactRoom lang={lang} />} />
-              <Route
-                path="/journal"
-                element={
-                  <JournalRoom
-                    lang={lang}
-                    posts={posts}
-                    isAdmin={isAdmin}
-                    onPostClick={setSelectedPost}
-                    onDeletePost={handleDeletePost}
-                    onAdminOpen={handleAdminOpen}
-                  />
-                }
-              />
-              <Route path="*" element={<NotFoundPage lang={lang} />} />
-            </Routes>
-          </motion.div>
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {content}
+            </motion.div>
         </AnimatePresence>
 
         {showLogin && <LoginModal onLogin={handleLogin} onClose={() => setShowLogin(false)} />}

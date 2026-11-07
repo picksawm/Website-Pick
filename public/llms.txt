@@ -33,13 +33,13 @@ Web design, front-end development, UI/UX design, 3D environment creation, Unreal
 
 ## The rooms
 
-- [Work](https://picksaw.ir/#/work): Websites, visual identities and creative-code projects.
-- [Worlds](https://picksaw.ir/#/worlds): 3D environments and Unreal Engine scenes.
-- [AI Art](https://picksaw.ir/#/ai): Generative images, concepts and motion studies.
-- [Sound](https://picksaw.ir/#/sound): Music production, rap writing, scores and sound design.
-- [About](https://picksaw.ir/#/about): Amirehsan Ashoori — biography, style, skills, timeline.
-- [Contact](https://picksaw.ir/#/contact): WhatsApp, phone, email, Instagram.
-- [Journal](https://picksaw.ir/#/journal): Studio notes and uploads.
+- [Work](https://picksaw.ir/work): Websites, visual identities and creative-code projects.
+- [Worlds](https://picksaw.ir/worlds): 3D environments and Unreal Engine scenes.
+- [AI Art](https://picksaw.ir/ai): Generative images, concepts and motion studies.
+- [Sound](https://picksaw.ir/sound): Music production, rap writing, scores and sound design.
+- [About](https://picksaw.ir/about): Amirehsan Ashoori — biography, style, skills, timeline.
+- [Contact](https://picksaw.ir/contact): WhatsApp, phone, email, Instagram.
+- [Journal](https://picksaw.ir/journal): Studio notes and uploads.
 
 ## Links
 

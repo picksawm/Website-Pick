@@ -1,5 +1,25 @@
 # Picksaw — SEO & AI-discoverability setup
 
+## Rendering model (read this first)
+
+The site is a client-rendered React SPA, but **every route is prerendered to
+static HTML at build time** by `scripts/prerender.mjs`. GitHub Pages serves
+`/worlds/index.html` at `/worlds`, so each tab is a real, crawlable document
+with its own title, description, canonical, OG tags and JSON-LD — not a
+client-side filter behind a fragment.
+
+Two rules follow from this and must not be broken:
+
+1. **No hash routes.** `HashRouter` was removed; `/#/work` style URLs collapse
+   every page into one crawlable URL. Old hash bookmarks are forwarded to real
+   paths by `HashLegacyRedirect` in `src/App.tsx`.
+2. **`base` must stay `/`.** Relative (`./`) asset paths break at
+   `/worlds/`, because `./assets/…` resolves to `/worlds/assets/…`.
+
+Adding a page means adding it to `ROUTES_EN` **and** `ROUTES_FA` in
+`src/seo/meta.ts`; the sitemap, prerender and runtime head all follow
+automatically.
+
 Everything in the repo is already in place; the remaining steps are
 one-time verifications on external services (they require domain
 ownership access).
@@ -8,13 +28,16 @@ ownership access).
 
 | File | Purpose |
 |---|---|
-| `index.html` `<head>` | Title, description, keywords, canonical, robots, geo, Open Graph + Twitter cards, theme color |
+| `src/seo/meta.ts` | **Single source of truth** for per-route title/description/canonical/OG/JSON-LD (EN + FA) |
+| `src/seo/head.ts` | Turns a route's meta into tags — used by both the prerenderer and the browser |
+| `scripts/prerender.mjs` | Renders all 8 routes to real static HTML with route-specific `<head>` at build time |
+| `index.html` `<head>` | Neutral shell + `<!--SEO_HEAD-->` marker that the prerenderer replaces per route |
 | `index.html` JSON-LD `@graph` | Organization + **Person (Amirehsan Ashoori)** linked via `founder`, WebSite, CollectionPage listing the six rooms, Stormblade VideoGame |
 | `public/og-image.png` | 1200×630 social/share card (brand mark, tagline, founder) |
 | `public/favicon.svg`, `icon-192.png`, `icon-512.png`, `apple-touch-icon.png` | Favicons + app icons |
 | `public/site.webmanifest` | PWA manifest (name, brand, icons, colors) |
 | `public/robots.txt` | Allows crawling, points to the sitemap |
-| `public/sitemap.xml` | Main site + the six room routes + Journal |
+| `dist/sitemap.xml` | **Generated** at build from the same route list — real paths, no hash URLs, hreflang pairs |
 | `public/llms.txt`, `public/llms-full.txt` | Plain-language briefs for LLM crawlers (who Amirehsan Ashoori / PICKSAW is, every product and verified profile) |
 | `public/humans.txt` | Human-readable credits |
 | `public/.nojekyll` | Ensures GitHub Pages serves every file (incl. dotfiles/txt) |

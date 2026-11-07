@@ -4,50 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-    <!-- ═══════════════ PRIMARY SEO ═══════════════ -->
-    <title>PICKSAW — Amirehsan Ashoori · Portfolio</title>
-    <meta
-      name="description"
-      content="The working archive of Amirehsan Ashoori (امیراحسان عاشوری) — websites, 3D environments, AI art and music. An image-first portfolio in six rooms: Work, Worlds, AI Art, Sound, About, Contact. Bilingual Persian + English."
-    />
-    <meta
-      name="keywords"
-      content="Picksaw, PICKSAW, Amirehsan Ashoori, Amir Ehsan Ashoori, امیراحسان عاشوری, پیکساو, portfolio, creative developer, web design, 3D environments, Unreal Engine, AI art, generative art, music production, sound design, creative coding, Persian design, تهران, نمونه کار"
-    />
-    <meta name="author" content="Amirehsan Ashoori" />
-    <meta name="creator" content="Amirehsan Ashoori — PICKSAW" />
-    <meta name="publisher" content="Picksaw" />
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-    <meta name="googlebot" content="index, follow" />
-    <meta name="color-scheme" content="dark light" />
-    <meta name="theme-color" content="#08090b" />
-    <meta name="geo.region" content="IR" />
+    <!-- ═══════════════ SEO HEAD ═══════════════
+         This block is REPLACED at build time by scripts/prerender.mjs with
+         route-specific title/description/canonical/OG/hreflang/JSON-LD.
+         What you see here is the fallback for the raw template only. -->
+    <!--SEO_HEAD-->
+    <title>Picksaw — Original Artwork by Amirehsan Ashoori</title>
+    <meta name="description" content="Picksaw is the art practice of Amirehsan Ashoori: high-contrast, experimental images and moving work." />
     <link rel="canonical" href="https://picksaw.ir/" />
-
-    <!-- ═══════════════ OPEN GRAPH ═══════════════ -->
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Picksaw" />
-    <meta property="og:url" content="https://picksaw.ir/" />
-    <meta property="og:title" content="PICKSAW — Amirehsan Ashoori · Portfolio" />
-    <meta
-      property="og:description"
-      content="Websites, 3D environments, AI art and music by Amirehsan Ashoori. An image-first portfolio in six rooms."
-    />
-    <meta property="og:image" content="https://picksaw.ir/og-image.png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Picksaw — portfolio of Amirehsan Ashoori" />
-    <meta property="og:locale" content="en_US" />
-    <meta property="og:locale:alternate" content="fa_IR" />
-
-    <!-- ═══════════════ TWITTER / X CARD ═══════════════ -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="PICKSAW — Amirehsan Ashoori · Portfolio" />
-    <meta
-      name="twitter:description"
-      content="Websites, 3D environments, AI art and music by Amirehsan Ashoori. An image-first portfolio in six rooms."
-    />
-    <meta name="twitter:image" content="https://picksaw.ir/og-image.png" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <!--/SEO_HEAD-->
 
     <!-- ═══════════════ ICONS / PWA ═══════════════ -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -156,14 +122,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <noscript>
-      <div style="max-width:640px;margin:64px auto;padding:0 24px;font-family:system-ui,sans-serif;color:#f4f1ea;background:#08090b">
-        <h1 style="font-family:Georgia,serif;font-weight:400">PICKSAW — Amirehsan Ashoori</h1>
-        <p>PICKSAW is the creative identity of <strong>Amirehsan Ashoori</strong> (امیراحسان عاشوری), a multidisciplinary creator working across technology, design, art, music and storytelling: websites, 3D environments, AI art and video, music and sound design, creative coding and visual branding.</p>
-        <p>The portfolio is organised in six rooms — Work, Worlds, AI Art, Sound, About and Contact — with a Journal of studio notes.</p>
-        <p>Contact: <a href="https://www.instagram.com/picksawm/" style="color:#d8ff3e">Instagram @picksawm</a> · <a href="https://wa.me/989380215823" style="color:#d8ff3e">WhatsApp +98 938 021 5823</a> · <a href="mailto:hello@picksaw.ir" style="color:#d8ff3e">hello@picksaw.ir</a></p>
-      </div>
-    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
