@@ -5,7 +5,9 @@ import Lenis from "lenis";
 
 import Nav from "./components/shell/Nav";
 import CoverPage from "./pages/CoverPage";
-import WorkRoom from "./pages/WorkRoom";
+import CollectionsPage from "./pages/CollectionsPage";
+import CollectionPage from "./pages/CollectionPage";
+import ArtworkPage from "./pages/ArtworkPage";
 import WorldsRoom from "./pages/WorldsRoom";
 import AiRoom from "./pages/AiRoom";
 import SoundRoom from "./pages/SoundRoom";
@@ -64,6 +66,7 @@ function HashLegacyRedirect() {
     const legacy: Record<string, string> = {
       "": "/",
       work: "/work",
+      collections: "/work",
       worlds: "/worlds",
       ai: "/ai",
       sound: "/sound",
@@ -177,7 +180,9 @@ export default function App({ initialLang, forPrerender = false }: AppProps = {}
     () => (
       <Routes location={location}>
         <Route path="/" element={<CoverPage lang={lang} />} />
-        <Route path="/work" element={<WorkRoom lang={lang} />} />
+        <Route path="/work" element={<CollectionsPage lang={lang} />} />
+        <Route path="/collections/:slug" element={<CollectionPage lang={lang} />} />
+        <Route path="/collections/:slug/:artworkSlug" element={<ArtworkPage lang={lang} />} />
         <Route path="/worlds" element={<WorldsRoom lang={lang} />} />
         <Route path="/ai" element={<AiRoom lang={lang} />} />
         <Route path="/sound" element={<SoundRoom lang={lang} />} />

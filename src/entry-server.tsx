@@ -13,7 +13,7 @@ import { StaticRouter } from "react-router";
 import App from "./App";
 import type { Lang } from "./config/siteTexts";
 
-export { ALL_PATHS, metaFor } from "./seo/meta";
+export { ALL_PATHS, metaFor, indexablePaths } from "./seo/meta";
 export { renderHeadHtml } from "./seo/head";
 
 export function render(path: string, lang: Lang = "en"): string {

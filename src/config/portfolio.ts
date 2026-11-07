@@ -496,7 +496,7 @@ export type RoomKey = (typeof ROOMS)[number]["key"];
 
 export const roomLabel = (key: RoomKey, lang: Lang): string => {
   const map: Record<RoomKey, Localized> = {
-    work: L("Work", "کارها"),
+    work: L("Collections", "مجموعه‌ها"),
     worlds: L("Worlds", "دنیاها"),
     ai: L("AI Art", "هنر هوش مصنوعی"),
     sound: L("Sound", "صدا"),

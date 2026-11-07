@@ -14,7 +14,7 @@ export const SITE_TEXTS: Record<Lang, Record<string, string>> = {
     city: "Tehran, Iran",
 
     // ── nav / rooms ──────────────────────────────────────────
-    navWork: "Work",
+    navWork: "Collections",
     navWorlds: "Worlds",
     navAi: "AI Art",
     navSound: "Sound",
@@ -36,7 +36,7 @@ export const SITE_TEXTS: Record<Lang, Record<string, string>> = {
     coverLine3: "breath",
     coverIntro:
       "PICKSAW is the working archive of Amirehsan Ashoori — websites, environments, AI images and sound, made between the night city and the Persian garden.",
-    coverMetaLeft: "Six rooms",
+    coverMetaLeft: "Six directions",
     coverMetaMid: "Persian + English",
     coverMetaRight: "Made in Tehran",
     coverEnter: "Enter the archive",
@@ -188,7 +188,7 @@ export const SITE_TEXTS: Record<Lang, Record<string, string>> = {
     role: "توسعه‌دهنده خلاق · هنرمند سه‌بعدی · موزیسین",
     city: "تهران، ایران",
 
-    navWork: "کارها",
+    navWork: "مجموعه‌ها",
     navWorlds: "دنیاها",
     navAi: "هنر هوش مصنوعی",
     navSound: "صدا",
@@ -209,14 +209,14 @@ export const SITE_TEXTS: Record<Lang, Record<string, string>> = {
     coverLine3: "نگه می‌دارند",
     coverIntro:
       "پیکساو آرشیو کاری امیراحسان عاشوری است — وب‌سایت، محیط سه‌بعدی، تصویر هوش مصنوعی و صدا؛ ساخته‌شده میان شهر شب و باغ ایرانی.",
-    coverMetaLeft: "شش اتاق",
+    coverMetaLeft: "شش جهت",
     coverMetaMid: "فارسی + انگلیسی",
     coverMetaRight: "ساخته‌شده در تهران",
     coverEnter: "ورود به آرشیو",
     coverScroll: "برای ورود اسکرول کنید",
 
     indexTitle: "اتاق‌ها",
-    indexSubtitle: "شش رشته، شش اتاق متفاوت. هر اتاق نور خودش را دارد.",
+    indexSubtitle: "شش جهت، شش زبان بصری متفاوت. هر مجموعه نور خودش را دارد.",
 
     workEyebrow: "۰۱ — کارها",
     workTitle: "سایت‌هایی که مثل فیلم ساخته می‌شوند",

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import type { Lang } from "../config/siteTexts";
 import { headTags, canonicalUrl } from "../seo/head";
-import { metaFor } from "../seo/meta";
+import { metaFor, collectionMeta, artworkMeta } from "../seo/meta";
 
 /**
  * Seo — the runtime half of the metadata system.
@@ -22,8 +22,20 @@ export default function Seo({ lang }: { lang: Lang }) {
     document.documentElement.lang = lang === "fa" ? "fa" : "en";
     document.documentElement.dir = lang === "fa" ? "rtl" : "ltr";
 
-    const meta = metaFor(lang, pathname);
-    const tags = headTags(lang, pathname);
+    // static routes first, then the data-driven ones
+    const dyn =
+      pathname.match(/^\/collections\/([^/]+)\/([^/]+)\/?$/) ??
+      pathname.match(/^\/collections\/([^/]+)\/?$/);
+
+    const dynamic =
+      dyn && dyn.length === 3
+        ? artworkMeta(lang, dyn[1], dyn[2])
+        : dyn && dyn.length === 2
+          ? collectionMeta(lang, dyn[1])
+          : null;
+
+    const meta = dynamic ?? metaFor(lang, pathname);
+    const tags = headTags(lang, pathname, dynamic ?? undefined);
 
     for (const tag of tags) {
       if (tag.tag === "title") {

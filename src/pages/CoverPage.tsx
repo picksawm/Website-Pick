@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "motion/react";
-import { ROOMS, roomLabel } from "../config/portfolio";
 import { SITE_TEXTS, type Lang } from "../config/siteTexts";
 import StormLayer from "../components/storm/StormLayer";
+import CinematicIntro from "../animation/CinematicIntro";
+import { collectionsSorted, collectionCount, totalPublished, tx } from "../config/collections";
 import { cn } from "../utils/cn";
 
 /**
@@ -36,6 +37,7 @@ export default function CoverPage({ lang }: { lang: Lang }) {
   const titleOpacity = useTransform(scrollYProgress, [0.45, 0.95], [1, 0]);
   const kickerOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
 
+  const [, setIntroDone] = useState(false);
   const [loaded, setLoaded] = useState(false);
   useEffect(() => {
     const img = new Image();
@@ -49,6 +51,14 @@ export default function CoverPage({ lang }: { lang: Lang }) {
   return (
     <div id="room" className="relative bg-[#06070a] text-bone">
       <StormLayer mode="dark" intensity={1.3} lightning />
+
+      {/* the exhibition opens — skipped for reduced motion and repeat visits */}
+      <CinematicIntro
+        lang={lang}
+        wordmark="Articksaw"
+        kicker={`${t.ownerName} · ${lang === "fa" ? "شش جهت" : "six directions"}`}
+        onDone={() => setIntroDone(true)}
+      />
 
       {/* ── the unfolding cover ─────────────────────────────────── */}
       <section ref={stage} className="relative h-[190svh]">
@@ -190,56 +200,52 @@ export default function CoverPage({ lang }: { lang: Lang }) {
         </div>
       </section>
 
-      {/* ── room directory ─────────────────────────────────────── */}
+      {/* ── the six directions ─────────────────────────────────── */}
       <section className="relative border-t border-bone/10 px-5 pb-24 pt-16 sm:px-8">
         <div className="mx-auto max-w-[1680px]">
-          <div className="mb-10 flex items-end justify-between gap-6">
-            <h2 className="display-md">{t.indexTitle}</h2>
+          <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
+            <h2 className="display-md">{lang === "fa" ? "مجموعه‌ها" : "Collections"}</h2>
             <p className="hidden max-w-xs text-right text-xs leading-relaxed text-bone/45 sm:block">
-              {t.indexSubtitle}
+              {totalPublished()}{" "}
+              {lang === "fa" ? "اثر منتشرشده" : "published works"} ·{" "}
+              {collectionsSorted().length} {lang === "fa" ? "جهت" : "directions"}
             </p>
           </div>
 
           <ul className="border-t border-bone/12">
-            {ROOMS.map((room, i) => (
-              <motion.li
-                key={room.key}
-                className="group border-b border-bone/12"
-                initial={{ opacity: 0, y: 18 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-8%" }}
-                transition={{ duration: 0.7, delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <Link to={room.path} className="flex items-center gap-4 py-5 sm:gap-8 sm:py-6">
-                  <span className="mono-label w-7 shrink-0 text-bone/30">{room.number}</span>
-
-                  <span className="relative hidden h-14 w-20 shrink-0 overflow-hidden sm:block">
-                    <img
-                      src={ROOM_IMAGES[i]}
-                      alt=""
-                      loading="lazy"
-                      className="h-full w-full scale-110 object-cover opacity-0 grayscale transition-all duration-700 group-hover:scale-100 group-hover:opacity-100 group-hover:grayscale-0"
-                    />
-                  </span>
-
-                  <span
-                    className={cn(
-                      "font-display text-[1.9rem] leading-none tracking-tight transition-all duration-500 group-hover:translate-x-1.5 sm:text-[3.1rem]",
-                      lang === "fa" && "text-[1.5rem] sm:text-[2.4rem]"
-                    )}
-                  >
-                    {roomLabel(room.key, lang)}
-                  </span>
-
-                  <span className="mono-label ml-auto hidden shrink-0 text-bone/30 sm:block">
-                    {ROOM_META[i][lang]}
-                  </span>
-                  <span className="ml-auto text-bone/30 transition-transform duration-500 group-hover:translate-x-1 sm:ml-6">
-                    {lang === "fa" ? "←" : "→"}
-                  </span>
-                </Link>
-              </motion.li>
-            ))}
+            {collectionsSorted().map((c, i) => {
+              const count = collectionCount(c.id);
+              return (
+                <motion.li
+                  key={c.id}
+                  className="group border-b border-bone/12"
+                  initial={{ opacity: 0, y: 18 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-8%" }}
+                  transition={{ duration: 0.7, delay: i * 0.04, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <Link to={`/collections/${c.slug}`} className="flex flex-wrap items-baseline gap-x-4 gap-y-2 py-5 sm:gap-8 sm:py-6">
+                    <span className="mono-label w-7 shrink-0 text-bone/30">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span
+                      className={cn(
+                        "font-display text-[1.7rem] leading-none tracking-tight transition-all duration-500 group-hover:translate-x-1.5 sm:text-[2.9rem]",
+                        lang === "fa" && "text-[1.4rem] sm:text-[2.2rem]"
+                      )}
+                    >
+                      {tx(c.name, lang)}
+                    </span>
+                    <span className="mono-label hidden text-bone/30 sm:ml-auto sm:block">
+                      {count > 0 ? `${count} ${lang === "fa" ? "اثر" : "works"}` : lang === "fa" ? "به‌زودی" : "soon"}
+                    </span>
+                    <span className="ml-auto text-bone/30 transition-transform duration-500 group-hover:translate-x-1 sm:ml-6">
+                      {lang === "fa" ? "←" : "→"}
+                    </span>
+                  </Link>
+                </motion.li>
+              );
+            })}
           </ul>
         </div>
       </section>
@@ -255,20 +261,4 @@ export default function CoverPage({ lang }: { lang: Lang }) {
   );
 }
 
-const ROOM_IMAGES = [
-  "/art/hero.jpg",
-  "/art/worlds-01.jpg",
-  "/art/ai-01.jpg",
-  "/art/ai-05.jpg",
-  "/art/worlds-04.jpg",
-  "/art/hero.jpg",
-];
 
-const ROOM_META: Record<Lang, string>[] = [
-  { en: "Websites · identity · code", fa: "وب‌سایت · هویت · کد" },
-  { en: "3D · Unreal · real-time", fa: "سه‌بعدی · Unreal · بلادرنگ" },
-  { en: "Generative images", fa: "تصویر مولد" },
-  { en: "Music · score · sound", fa: "موسیقی · متن · صدا" },
-  { en: "The person behind it", fa: "آدمِ پشت آن" },
-  { en: "Say hello", fa: "سلام کنید" },
-];

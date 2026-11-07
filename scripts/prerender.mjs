@@ -56,7 +56,8 @@ async function main() {
   const entryFile = path.join(ssrDir, "entry-server.mjs");
   if (!existsSync(entryFile)) throw new Error("prerender: SSR entry was not emitted");
 
-  const { render, renderHeadHtml, ALL_PATHS } = await import(pathToFileURL(entryFile).href);
+  const { render, renderHeadHtml, indexablePaths } = await import(pathToFileURL(entryFile).href);
+  const ALL_PATHS = indexablePaths();
 
   // ── 2. splice each route into the built index.html ────────────────
   const template = readFileSync(path.join(dist, "index.html"), "utf8");
@@ -88,7 +89,16 @@ async function main() {
 
   // ── 4. sitemap generated from the same route list ─────────────────
   const today = new Date().toISOString().slice(0, 10);
-  const priority = (p) => (p === "/" ? "1.0" : p === "/about" || p === "/contact" ? "0.6" : "0.8");
+  const priority = (p) =>
+    p === "/"
+      ? "1.0"
+      : p.startsWith("/collections/")
+        ? p.split("/").length === 4
+          ? "0.8"
+          : "0.9"
+        : p === "/about" || p === "/contact"
+          ? "0.6"
+          : "0.8";
   const changefreq = (p) => (p === "/" || p === "/journal" ? "weekly" : "monthly");
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"

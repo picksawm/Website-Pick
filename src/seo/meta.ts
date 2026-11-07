@@ -10,6 +10,7 @@
  * Twitter card, and (where useful) route-scoped JSON-LD.
  */
 import type { Lang } from "../config/siteTexts";
+import { collectionsSorted, artworksIn, collectionBySlug, tx } from "../config/collections";
 
 export const SITE = {
   origin: "https://picksaw.ir",
@@ -248,11 +249,18 @@ export const ALL_PATHS = ROUTES_EN.map((r) => r.path);
 export function metaFor(lang: Lang, path: string): RouteMeta {
   const list = ROUTES[lang] ?? ROUTES_EN;
   const clean = path.replace(/\/+$/, "") || "/";
-  return (
-    list.find((r) => r.path === clean) ??
-    ROUTES_EN.find((r) => r.path === clean) ??
-    list[0]
-  );
+
+  const staticHit = list.find((r) => r.path === clean) ?? ROUTES_EN.find((r) => r.path === clean);
+  if (staticHit) return staticHit;
+
+  // data-driven routes: /collections/:slug and /collections/:slug/:artwork
+  const art = clean.match(/^\/collections\/([^/]+)\/([^/]+)$/);
+  if (art) return artworkMeta(lang, art[1], art[2]) ?? list[0];
+
+  const col = clean.match(/^\/collections\/([^/]+)$/);
+  if (col) return collectionMeta(lang, col[1]) ?? list[0];
+
+  return list[0];
 }
 
 /** hreflang alternate pairs for a path (BAKED: default lang is EN). */
@@ -262,4 +270,119 @@ export function alternates(path: string) {
     { hreflang: "fa-IR", href: `${abs(path)}#fa` },
     { hreflang: "x-default", href: abs(path) },
   ];
+}
+
+
+/* ═══════════════════ dynamic routes (collections / artworks) ═══════════════════
+   These are generated from published data, so a new artwork or collection
+   automatically gets a page, metadata and a sitemap entry — no edits here. */
+
+export function collectionMeta(lang: Lang, slug: string): RouteMeta | null {
+  const c = collectionBySlug(slug);
+  if (!c) return null;
+
+  const works = artworksIn(c.id);
+  const name = tx(c.name, lang);
+  const statement = tx(c.statement, lang);
+
+  return {
+    path: `/collections/${c.slug}`,
+    title:
+      lang === "fa"
+        ? `${name} — مجموعه‌ی آثار پیکساو`
+        : `${name} — Articksaw Collection · Picksaw`,
+    description: statement.slice(0, 155),
+    ogImage: works[0]?.image || undefined,
+    ogImageAlt: works[0] ? tx(works[0].alt, lang) : undefined,
+    jsonLd: [
+      {
+        "@type": "CollectionPage",
+        "@id": `${SITE.origin}/collections/${c.slug}#page`,
+        url: `${SITE.origin}/collections/${c.slug}`,
+        name,
+        description: statement,
+        about: { "@id": `${SITE.origin}/#amir` },
+        inLanguage: lang === "fa" ? "fa-IR" : "en",
+        keywords: [...c.keywords, "Articksaw", "Picksaw"].join(", "),
+        ...(works.length
+          ? {
+              hasPart: works.map((w) => ({
+                "@type": "VisualArtwork",
+                name: tx(w.title, lang),
+                url: `${SITE.origin}/collections/${c.slug}/${w.slug}`,
+                image: `${SITE.origin}${w.image}`,
+                dateCreated: w.year,
+              })),
+            }
+          : {}),
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Picksaw", item: `${SITE.origin}/` },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: lang === "fa" ? "مجموعه‌ها" : "Collections",
+            item: `${SITE.origin}/work`,
+          },
+          { "@type": "ListItem", position: 3, name, item: `${SITE.origin}/collections/${c.slug}` },
+        ],
+      },
+    ],
+  };
+}
+
+export function artworkMeta(lang: Lang, slug: string, artworkSlug: string): RouteMeta | null {
+  const c = collectionBySlug(slug);
+  if (!c) return null;
+  const a = artworksIn(c.id).find((w) => w.slug === artworkSlug);
+  if (!a) return null;
+
+  const url = `${SITE.origin}/collections/${c.slug}/${a.slug}`;
+  const title = tx(a.title, lang);
+
+  return {
+    path: `/collections/${c.slug}/${a.slug}`,
+    title: lang === "fa" ? `${title} — ${tx(c.name, lang)} · پیکساو` : `${title} — ${tx(c.name, lang)} · Picksaw`,
+    description: tx(a.caption, lang).slice(0, 155),
+    ogImage: a.image,
+    ogImageAlt: tx(a.alt, lang),
+    ogType: "article",
+    jsonLd: [
+      {
+        "@type": "VisualArtwork",
+        "@id": `${url}#artwork`,
+        url,
+        name: title,
+        alternateName: a.title.fa,
+        description: tx(a.caption, lang),
+        image: {
+          "@type": "ImageObject",
+          url: `${SITE.origin}${a.image}`,
+          caption: tx(a.alt, lang),
+        },
+        creator: { "@id": `${SITE.origin}/#amir` },
+        dateCreated: a.year,
+        artform: tx(a.medium, lang),
+        artMedium: tx(a.medium, lang),
+        inLanguage: lang === "fa" ? "fa-IR" : "en",
+        isPartOf: {
+          "@type": "CollectionPage",
+          name: tx(c.name, lang),
+          url: `${SITE.origin}/collections/${c.slug}`,
+        },
+      },
+    ],
+  };
+}
+
+/** Every indexable path, including generated collection pages. */
+export function indexablePaths(): string[] {
+  const base = [...ALL_PATHS];
+  const collections = collectionsSorted().map((c) => `/collections/${c.slug}`);
+  const artworks = collectionsSorted().flatMap((c) =>
+    artworksIn(c.id).map((a) => `/collections/${c.slug}/${a.slug}`)
+  );
+  return [...base, ...collections, ...artworks];
 }
