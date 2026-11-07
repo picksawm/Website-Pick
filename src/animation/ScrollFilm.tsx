@@ -59,7 +59,8 @@ export const frameUrl = (film: FilmManifest, tier: "hi" | "lo", index: number) =
 export function loadFrame(
   film: FilmManifest,
   tier: "hi" | "lo",
-  index: number
+  index: number,
+  resolveUrl?: (index: number) => string
 ): Promise<ImageBitmap | null> {
   if (index < 0 || index >= film.frames) return Promise.resolve(null);
   const s = stateFor(film, tier);
@@ -74,10 +75,10 @@ export function loadFrame(
   const pending = s.inflight.get(index);
   if (pending) return pending;
 
-  const p = new Promise<ImageBitmap | null>((resolve) => {
+  const p = new Promise<ImageBitmap | null>((done$) => {
     const img = new Image();
     img.decoding = "async";
-    img.src = frameUrl(film, tier, index);
+    img.src = resolveUrl ? resolveUrl(index) : frameUrl(film, tier, index);
 
     const done = (bmp: ImageBitmap | null) => {
       s.inflight.delete(index);
@@ -86,7 +87,7 @@ export function loadFrame(
         s.order.push(index);
         evict(film, tier, index);
       }
-      resolve(bmp);
+      done$(bmp);
     };
 
     (img.decode?.() ?? Promise.reject(new Error("no decode")))
@@ -119,6 +120,12 @@ export interface ScrollFilmProps {
   /** a still that holds the frame until the first decoded frame arrives —
       this is also what a no-JS visitor sees, so it must be a real image */
   posterSrc?: string;
+  /**
+   * Single-tier mode. When an artwork supplies its own frame sequence
+   * (one folder, no lo/hi split), this resolves frame URLs directly and
+   * the preview lane is skipped.
+   */
+  urlFor?: (index: number) => string;
 }
 
 /**
@@ -147,6 +154,7 @@ export default function ScrollFilm({
   window: win = 8,
   eager = true,
   posterSrc,
+  urlFor,
 }: ScrollFilmProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const progressRef = useRef(progress);
@@ -211,6 +219,7 @@ export default function ScrollFilm({
   //    than only near the playhead) is what guarantees that a fast
   //    scroller always has *something* to look at.
   useEffect(() => {
+    if (urlFor) return; // single-tier mode has no preview lane
     let cancelled = false;
     const s = stateFor(film, "lo");
 
@@ -245,10 +254,24 @@ export default function ScrollFilm({
     let alive = true;
 
     // start both requests at once; the small one almost always wins
+    if (urlFor) {
+      // single-tier: every frame is its own "sharp" frame
+      loadFrame(film, "hi", index, urlFor).then((bmp) => {
+        if (!alive || !bmp) return;
+        if (indexRef.current === index) {
+          shown.current.hi = index;
+          paint(bmp);
+          setFirstReady(true);
+        }
+      });
+      return;
+    }
+
     const loReq = loadFrame(film, "lo", index);
     const hiReq = eager ? loadFrame(film, "hi", index) : Promise.resolve(null);
 
     (async () => {
+      if (urlFor) return;
       const cachedHi = stateFor(film, "hi").cache.get(index);
       if (cachedHi && shown.current.hi !== index) {
         shown.current.hi = index;
@@ -278,17 +301,17 @@ export default function ScrollFilm({
     return () => {
       alive = false;
     };
-  }, [index, film, paint, eager]);
+  }, [index, film, paint, eager, urlFor]);
 
   // ── sharp lane: keep a window of full-size frames around the playhead ──
   useEffect(() => {
     if (!eager) return;
     const dir = direction.current;
     for (let d = 1; d <= win; d++) {
-      loadFrame(film, "hi", index + d * dir);
-      loadFrame(film, "hi", index - d * dir);
+      loadFrame(film, "hi", index + d * dir, urlFor);
+      loadFrame(film, "hi", index - d * dir, urlFor);
     }
-  }, [index, film, win, eager]);
+  }, [index, film, win, eager, urlFor]);
 
   // a lo frame arriving late should still land if hi never came
   useEffect(() => {
@@ -307,7 +330,7 @@ export default function ScrollFilm({
   // detect a totally broken film (bad manifest) rather than staring at black
   useEffect(() => {
     let cancelled = false;
-    loadFrame(film, "lo", 0).then((b) => {
+    loadFrame(film, urlFor ? "hi" : "lo", 0, urlFor).then((b) => {
       if (cancelled) return;
       if (b) setFirstReady(true);
       else setFailed(true);

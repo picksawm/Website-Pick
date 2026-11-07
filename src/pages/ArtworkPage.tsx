@@ -9,7 +9,7 @@ import {
 } from "../config/collections";
 import { SITE_TEXTS, type Lang } from "../config/siteTexts";
 import ScrollScene from "../animation/ScrollScene";
-import ImageSequence from "../animation/ImageSequence";
+import ImageSequence from "../animation/ScrollFilm";
 import VideoScrub from "../animation/VideoScrub";
 import { useReducedMotion } from "../animation/useReducedMotion";
 import Art from "../components/ui/Art";
@@ -74,10 +74,21 @@ export default function ArtworkPage({ lang }: { lang: Lang }) {
         >
           <div className="absolute inset-0">
             {mode === "sequence" && artwork.sequence ? (
+              /* artwork sequences reuse the same canvas engine as the cover
+                 film — one scrubber, two data shapes */
               <ImageSequence
-                dir={artwork.sequence.dir}
-                frames={artwork.sequence.frames}
-                ext={artwork.sequence.ext}
+                film={{
+                  slug: artwork.slug,
+                  frames: artwork.sequence.frames,
+                  width: 1600,
+                  height: 900,
+                  ext: artwork.sequence.ext ?? "webp",
+                  dir: artwork.sequence.dir,
+                  tiers: { lo: "", hi: "" },
+                }}
+                urlFor={(i) =>
+                  `${artwork.sequence!.dir}/${String(i + 1).padStart(4, "0")}.${artwork.sequence!.ext ?? "webp"}`
+                }
                 progress={reduced ? 1 : progress}
                 alt={tx(artwork.alt, lang)}
               />
