@@ -11,6 +11,8 @@ import {
 } from "../config/collections";
 import { type Lang } from "../config/siteTexts";
 import Art from "../components/ui/Art";
+import ScrollFilmScene from "../animation/ScrollFilmScene";
+import { filmFor } from "../config/films.generated";
 import NotFoundPage from "./NotFoundPage";
 import { cn } from "../utils/cn";
 
@@ -32,6 +34,9 @@ export default function CollectionPage({ lang }: { lang: Lang }) {
 
   const artworks = useMemo(() => artworksIn(collection.id), [collection.id]);
   const pillars = collectionPillars(collection);
+  // a collection may open with its own film; the slug doubles as the film
+  // name so publishing one is a data step, not a code change
+  const film = filmFor(collection.slug);
   const siblings = collectionsSorted().filter((c) => c.id !== collection.id);
 
   return (
@@ -85,6 +90,22 @@ export default function CollectionPage({ lang }: { lang: Lang }) {
           </ul>
         </div>
       </section>
+
+      {/* ── opening film (only for directions that have one) ───── */}
+      {film && (
+        <section className="relative">
+          <ScrollFilmScene
+            film={film}
+            distance={2.2}
+            hud={false}
+            alt={
+              lang === "fa"
+                ? `فیلم افتتاحیه‌ی مجموعه ${tx(collection.name, lang)}`
+                : `Opening film for the ${tx(collection.name, lang)} direction`
+            }
+          />
+        </section>
+      )}
 
       {/* ── works ────────────────────────────────────────────── */}
       <section className="px-5 pb-20 sm:px-8">

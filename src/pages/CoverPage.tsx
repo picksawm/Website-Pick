@@ -1,53 +1,31 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform } from "motion/react";
+import { motion } from "motion/react";
 import { SITE_TEXTS, type Lang } from "../config/siteTexts";
 import StormLayer from "../components/storm/StormLayer";
 import CinematicIntro from "../animation/CinematicIntro";
+import ScrollFilmScene from "../animation/ScrollFilmScene";
+import CoverHeadline from "../components/cover/CoverHeadline";
+import { filmFor } from "../config/films.generated";
 import { collectionsSorted, collectionCount, totalPublished, tx } from "../config/collections";
 import { cn } from "../utils/cn";
 
 /**
  * CoverPage — the threshold, and the first "opening palm".
  *
- * Scroll behaviour: the cover starts as a narrow vertical slit of light
- * in the storm. As you scroll, the slit widens until the night avenue
- * fills the frame, the type recedes into the rain, and the room
- * directory rises out of the dark. The image is never static — it is
- * being opened, not scrolled past.
+ * Scroll behaviour: the cover is a frame sequence — a film that only
+ * plays because you are scrolling. The camera pushes through a
+ * rain-soaked avenue, into Persian arches, into the city behind them.
+ * Stopping freezes the frame; scrolling back runs it in reverse. The
+ * headline sits inside the shot and lifts away in the first third, so
+ * the rest of the film is just the picture.
  */
+/** the opening film, generated from artwork by scripts/build-frames.mjs */
+const OPENING_FILM = filmFor("opening");
+
 export default function CoverPage({ lang }: { lang: Lang }) {
   const t = SITE_TEXTS[lang];
-  const stage = useRef<HTMLDivElement>(null);
-
-  const { scrollYProgress } = useScroll({ target: stage, offset: ["start start", "end start"] });
-
-  // ── the opening ──────────────────────────────────────────────
-  const slit = useTransform(scrollYProgress, [0, 0.62], ["47%", "0%"]);
-  const clip = useTransform(slit, (v) => `inset(0% ${v} 0% ${v})`);
-  const imgScale = useTransform(scrollYProgress, [0, 1], [1.35, 1]);
-  const imgY = useTransform(scrollYProgress, [0, 1], ["-4%", "6%"]);
-
-  // ── weather pressure builds as you descend ───────────────────
-  const veil = useTransform(scrollYProgress, [0, 0.75], [0.72, 0.18]);
-
-  // ── type: survives the contraction, then rises into the rain ──
-  const titleScale = useTransform(scrollYProgress, [0, 0.62], [1, 0.82]);
-  const titleY = useTransform(scrollYProgress, [0, 1], [0, -90]);
-  const titleOpacity = useTransform(scrollYProgress, [0.45, 0.95], [1, 0]);
-  const kickerOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
-
   const [, setIntroDone] = useState(false);
-  const [loaded, setLoaded] = useState(false);
-  useEffect(() => {
-    const img = new Image();
-    img.src = "/art/hero.jpg";
-    if (img.complete) setLoaded(true);
-    else img.onload = () => setLoaded(true);
-  }, []);
-
-  const lines = [t.coverLine1, t.coverLine2, t.coverLine3];
-
   return (
     <div id="room" className="relative bg-[#06070a] text-bone">
       <StormLayer mode="dark" intensity={1.3} lightning />
@@ -60,114 +38,36 @@ export default function CoverPage({ lang }: { lang: Lang }) {
         onDone={() => setIntroDone(true)}
       />
 
-      {/* ── the unfolding cover ─────────────────────────────────── */}
-      <section ref={stage} className="relative h-[190svh]">
-        <div className="sticky top-0 h-[100svh] w-full overflow-hidden">
-          {/* image, revealed through a widening slit */}
-          <motion.div className="absolute inset-0" style={{ clipPath: clip }}>
-            <motion.img
-              src="/art/hero.jpg"
-              alt="Rain-soaked night avenue between brutalist towers, lit by Persian geometric neon"
-              className="h-full w-full object-cover"
-              style={{ scale: imgScale, y: imgY }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: loaded ? 1 : 0 }}
-              transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
-              fetchPriority="high"
-              draggable={false}
-            />
-
-            {/* the light that escapes the slit */}
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-0"
-              style={{
-                background:
-                  "radial-gradient(80% 60% at 50% 50%, rgba(127,220,255,0.18) 0%, transparent 65%)",
-              }}
-            />
-          </motion.div>
-
-          {/* the dark that gets pushed aside */}
-          <motion.div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 bg-[#06070a]"
-            style={{ opacity: veil }}
+      {/* ── the opening film ─────────────────────────────────────
+          The cover is no longer a still being revealed: it is a frame
+          sequence that plays as you scroll. Scroll position *is* the
+          playhead, so stopping freezes the picture and scrolling back
+          runs it backwards. The headline rides on top and leaves early,
+          so the film is unobstructed for the rest of its run. */}
+      {OPENING_FILM ? (
+        <ScrollFilmScene
+          film={OPENING_FILM}
+          distance={3.2}
+          alt={
+            lang === "fa"
+              ? "خیابان شبانه زیر باران، طاق‌های هندسی پارسی و شهری از نور سرد"
+              : "A rain-soaked night avenue opening into Persian arches, then a city of cold light"
+          }
+          overlay={(p) => <CoverHeadline progress={p} lang={lang} />}
+        />
+      ) : (
+        /* no film built yet (fresh clone, or frames not committed) — the
+           cover still has to be a cover, so fall back to the single still */
+        <section className="relative h-[100svh] w-full overflow-hidden">
+          <img
+            src="/art/hero.jpg"
+            alt="Rain-soaked night avenue between brutalist towers, lit by Persian geometric neon"
+            className="h-full w-full object-cover"
+            fetchPriority="high"
           />
-
-          {/* slit edges — two cold blades of light */}
-          <motion.div
-            aria-hidden
-            className="pointer-events-none absolute inset-y-0"
-            style={{ left: useTransform(slit, (v) => `calc(${v} - 1px)`), opacity: useTransform(scrollYProgress, [0, 0.5], [1, 0]) }}
-          >
-            <div className="h-full w-[2px] bg-gradient-to-b from-transparent via-[#c8e8ff] to-transparent shadow-[0_0_28px_rgba(127,220,255,0.9)]" />
-          </motion.div>
-          <motion.div
-            aria-hidden
-            className="pointer-events-none absolute inset-y-0"
-            style={{ right: useTransform(slit, (v) => `calc(${v} - 1px)`), opacity: useTransform(scrollYProgress, [0, 0.5], [1, 0]) }}
-          >
-            <div className="h-full w-[2px] bg-gradient-to-b from-transparent via-[#c8e8ff] to-transparent shadow-[0_0_28px_rgba(127,220,255,0.9)]" />
-          </motion.div>
-
-          {/* frame furniture + headline */}
-          <div className="absolute inset-0 z-[6] flex flex-col justify-between px-5 pb-6 pt-24 sm:px-8 sm:pb-8 sm:pt-28">
-            <motion.div className="flex items-start justify-between gap-6" style={{ opacity: kickerOpacity }}>
-              <p className="mono-label max-w-[13rem] text-bone/55 sm:max-w-xs">{t.coverEyebrow}</p>
-              <p className="mono-label hidden text-right text-bone/45 sm:block">
-                {t.ownerName}
-                <br />
-                {t.city}
-              </p>
-            </motion.div>
-
-            <motion.div
-              style={{ y: titleY, scale: titleScale, opacity: titleOpacity, transformOrigin: "left bottom" }}
-              className="pb-6"
-            >
-              <motion.h1
-                className={cn(
-                  "display-xl max-w-[15ch] text-balance",
-                  lang === "fa" && "max-w-[14ch] text-[clamp(2.2rem,8.4vw,6.4rem)] leading-[1.1]"
-                )}
-              >
-                {lines.map((line, i) => (
-                  <span key={line} className="block pb-[0.06em] last:pb-0">
-                    <motion.span
-                      className={cn("inline-block", i === 2 && "italic")}
-                      initial={{ y: "112%" }}
-                      animate={{ y: 0 }}
-                      transition={{ delay: 0.5 + i * 0.1, duration: 1.2, ease: [0.19, 1, 0.22, 1] }}
-                    >
-                      {line}
-                    </motion.span>
-                  </span>
-                ))}
-              </motion.h1>
-            </motion.div>
-
-            <div className="flex flex-wrap items-end justify-between gap-4 border-t border-bone/15 pt-4">
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-1">
-                {[t.coverMetaLeft, t.coverMetaMid, t.coverMetaRight].map((m) => (
-                  <span key={m} className="mono-label text-bone/45">
-                    {m}
-                  </span>
-                ))}
-              </div>
-              <div className="flex items-center gap-2 text-bone/60">
-                <span className="mono-label">{t.coverScroll}</span>
-                <motion.span
-                  className="block h-8 w-px bg-bone/40"
-                  animate={{ scaleY: [0.3, 1, 0.3], opacity: [0.3, 1, 0.3] }}
-                  transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
-                  style={{ originY: 0 }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+          <div className="absolute inset-0 bg-[#06070a]/35" />
+        </section>
+      )}
 
       {/* ── statement ──────────────────────────────────────────── */}
       <section className="relative border-t border-bone/10 px-5 py-20 sm:px-8 sm:py-28">

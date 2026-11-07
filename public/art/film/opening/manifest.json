@@ -1,0 +1,17 @@
+{
+  "slug": "opening",
+  "frames": 96,
+  "width": 1200,
+  "height": 675,
+  "ext": "webp",
+  "dir": "/art/film/opening",
+  "source": "stills",
+  "tiers": {
+    "lo": "lo",
+    "hi": "hi"
+  },
+  "bytes": {
+    "hi": 5237822,
+    "lo": 844956
+  }
+}
